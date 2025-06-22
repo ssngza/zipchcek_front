@@ -38,7 +38,9 @@ export default [
       // TypeScript에서 사용하지 않는 변수 경고 완화
       "@typescript-eslint/no-unused-vars": [
         "warn",
-        { argsIgnorePattern: "^_" },
+        {
+          argsIgnorePattern: "^_",
+        },
       ],
     },
     settings: {
