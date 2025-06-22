@@ -1,0 +1,59 @@
+# Task ID: 1
+# Title: 프로젝트 저장소 및 개발 환경 설정
+# Status: pending
+# Dependencies: None
+# Priority: high
+# Description: ZipCheck 프로젝트의 저장소를 초기화하고 프론트엔드 개발 환경을 설정합니다.
+# Details:
+1. ZipCheck용 새로운 Git 저장소를 생성합니다.
+2. TypeScript와 함께 Create React App을 사용하여 프론트엔드 프로젝트를 설정합니다.
+3. TailwindCSS (v3.3.2)와 Shadcn UI (v0.1.0)를 설치하고 구성합니다.
+4. 코드 품질을 위해 ESLint (v8.41.0)와 Prettier (v2.8.8)를 설정합니다.
+5. 기본 프로젝트 구조와 README.md를 생성합니다.
+
+# Test Strategy:
+1. 모든 종속성이 올바르게 설치되고 구성되었는지 확인합니다.
+2. 개발 서버가 오류 없이 시작되는지 확인합니다.
+
+# Subtasks:
+## 1. Git 저장소 생성 [pending]
+### Dependencies: None
+### Description: ZipCheck 프로젝트를 위한 새로운 Git 저장소를 생성합니다.
+### Details:
+1. GitHub에서 새 저장소를 생성합니다.
+2. 저장소 이름은 'zipcheck'으로 설정합니다.
+3. 저장소를 로컬 환경에 클론합니다.
+
+## 2. React 프로젝트 설정 [pending]
+### Dependencies: 1.1
+### Description: TypeScript와 함께 Create React App을 사용하여 프론트엔드 프로젝트를 초기화합니다.
+### Details:
+1. Create React App을 사용하여 TypeScript 템플릿으로 프로젝트를 생성합니다.
+2. 필요한 기본 패키지를 설치합니다.
+3. 프로젝트 구조를 확인하고 불필요한 파일을 제거합니다.
+
+## 3. UI 라이브러리 설정 [pending]
+### Dependencies: 1.2
+### Description: TailwindCSS와 Shadcn UI를 설치하고 구성합니다.
+### Details:
+1. TailwindCSS (v3.3.2)를 설치하고 구성합니다.
+2. Shadcn UI (v0.1.0)를 설치하고 구성합니다.
+3. 기본 테마와 색상을 설정합니다.
+
+## 4. 코드 품질 도구 설정 [pending]
+### Dependencies: 1.2
+### Description: ESLint와 Prettier를 설정하여 코드 품질을 유지합니다.
+### Details:
+1. ESLint (v8.41.0)를 설치하고 구성합니다.
+2. Prettier (v2.8.8)를 설치하고 구성합니다.
+3. ESLint와 Prettier 통합을 설정합니다.
+4. VS Code 설정 파일을 추가하여 편집기 통합을 개선합니다.
+
+## 5. 프로젝트 구조 및 문서화 [pending]
+### Dependencies: 1.2, 1.3, 1.4
+### Description: 기본 프로젝트 구조를 설정하고 README.md 파일을 작성합니다.
+### Details:
+1. 프로젝트에 필요한 폴더 구조를 생성합니다 (components, pages, hooks, utils 등).
+2. README.md 파일을 작성하여 프로젝트 설정 및 실행 방법을 문서화합니다.
+3. 기본 컴포넌트와 페이지 예제를 추가합니다.
+

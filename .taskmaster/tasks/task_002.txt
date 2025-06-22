@@ -1,0 +1,74 @@
+# Task ID: 2
+# Title: 로그인 화면 UI 개발
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: 로그인 및 회원가입 화면 UI를 구현합니다. 임시 인증으로 로그인 버튼 클릭 시 메인 화면으로 이동합니다.
+# Details:
+1. React Router (v6.11.2)를 사용하여 기본 라우팅 설정
+2. Shadcn UI를 사용하여 로그인 화면 UI 컴포넌트 생성
+3. 로그인 폼 디자인 (이메일, 비밀번호 입력 필드)
+4. 로그인 버튼 클릭 시 메인 업로드 화면으로 이동하는 기능 구현
+5. 회원가입 화면 UI 생성 (기능 없이 UI만)
+6. 임시 사용자 상태 관리 (로그인/로그아웃 상태만)
+7. 네비게이션 컴포넌트 생성
+8. 반응형 디자인 적용
+
+# Test Strategy:
+1. 로그인 화면 UI 렌더링 테스트
+2. 로그인 폼 입력 필드 동작 확인
+3. 로그인 버튼 클릭 시 메인 업로드 화면으로 정상 이동하는지 테스트
+4. 회원가입 화면 UI 렌더링 테스트
+5. 네비게이션 컴포넌트 동작 확인
+6. 반응형 디자인 다양한 화면 크기에서 테스트
+7. 임시 사용자 상태 변경 테스트
+
+# Subtasks:
+## 1. React Router 기본 라우팅 설정 [pending]
+### Dependencies: None
+### Description: React Router v6.11.2를 사용하여 기본 라우팅 구조를 설정합니다.
+### Details:
+
+
+## 2. 로그인 화면 UI 컴포넌트 생성 [pending]
+### Dependencies: None
+### Description: Shadcn UI를 사용하여 로그인 화면의 기본 레이아웃과 컴포넌트를 생성합니다.
+### Details:
+
+
+## 3. 로그인 폼 디자인 구현 [pending]
+### Dependencies: None
+### Description: 이메일과 비밀번호 입력 필드를 포함한 로그인 폼을 디자인하고 구현합니다.
+### Details:
+
+
+## 4. 로그인 버튼 기능 구현 [pending]
+### Dependencies: None
+### Description: 로그인 버튼 클릭 시 메인 업로드 화면으로 이동하는 기능을 구현합니다.
+### Details:
+
+
+## 5. 회원가입 화면 UI 생성 [pending]
+### Dependencies: None
+### Description: 실제 기능 없이 회원가입 화면의 UI만 생성합니다.
+### Details:
+
+
+## 6. 임시 사용자 상태 관리 구현 [pending]
+### Dependencies: None
+### Description: 로그인/로그아웃 상태만을 관리하는 임시 사용자 상태 관리 시스템을 구현합니다.
+### Details:
+
+
+## 7. 네비게이션 컴포넌트 생성 [pending]
+### Dependencies: None
+### Description: 사용자 상태에 따른 네비게이션 컴포넌트를 생성합니다.
+### Details:
+
+
+## 8. 반응형 디자인 적용 [pending]
+### Dependencies: None
+### Description: 로그인 및 회원가입 화면에 반응형 디자인을 적용합니다.
+### Details:
+
+
