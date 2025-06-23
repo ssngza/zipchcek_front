@@ -158,7 +158,7 @@
         "id": 3,
         "title": "메인 업로드 화면 UI 개발",
         "description": "PDF 업로드가 가능한 메인 화면 UI를 구현합니다. 등기부 발급 가이드 버튼도 포함합니다.",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [
           2
         ],
@@ -228,7 +228,7 @@
               4
             ],
             "details": "- 버튼 디자인 및 배치\n- 활성/비활성 상태 관리\n- 클릭 이벤트 핸들러 구현\n- 로딩 상태 표시\n- 테스트: 버튼 상태 변화 및 클릭 이벤트 검증",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -241,7 +241,7 @@
               4
             ],
             "details": "- 프로그레스 바 컴포넌트 구현\n- 퍼센트 표시 기능\n- 애니메이션 효과 추가\n- 업로드 속도 및 남은 시간 표시\n- 테스트: 다양한 업로드 속도에서 진행률 표시 정확성 확인",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -252,7 +252,7 @@
               4
             ],
             "details": "- 파일 항목별 삭제 버튼 추가\n- 삭제 확인 다이얼로그 구현\n- 삭제 애니메이션 효과\n- 전체 파일 삭제 옵션\n- 테스트: 파일 제거 기능 및 UI 상태 업데이트 검증",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -270,7 +270,7 @@
               8
             ],
             "details": "- 모바일, 태블릿, 데스크톱 레이아웃 설계\n- 미디어 쿼리 구현\n- 요소 크기 및 배치 조정\n- 터치 인터랙션 최적화\n- 테스트: 다양한 디바이스 및 화면 크기에서 UI 테스트",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -281,7 +281,7 @@
               1
             ],
             "details": "- 로고 및 브랜딩 요소 배치\n- 네비게이션 메뉴 구현\n- 사용자 계정 정보 표시\n- 알림 및 도움말 아이콘 추가\n- 테스트: 네비게이션 링크 및 반응형 동작 검증",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           }
         ]
@@ -813,7 +813,7 @@
     ],
     "metadata": {
       "created": "2025-06-22T07:46:06.249Z",
-      "updated": "2025-06-23T15:40:02.942Z",
+      "updated": "2025-06-23T15:40:56.660Z",
       "description": "Tasks for master context"
     }
   },
