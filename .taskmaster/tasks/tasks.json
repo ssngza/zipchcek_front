@@ -120,7 +120,7 @@
             "id": 5,
             "title": "회원가입 화면 UI 생성",
             "description": "실제 기능 없이 회원가입 화면의 UI만 생성합니다.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
             "details": "",
             "testStrategy": ""
@@ -813,7 +813,7 @@
     ],
     "metadata": {
       "created": "2025-06-22T07:46:06.249Z",
-      "updated": "2025-06-23T15:23:12.811Z",
+      "updated": "2025-06-23T15:24:57.725Z",
       "description": "Tasks for master context"
     }
   },
