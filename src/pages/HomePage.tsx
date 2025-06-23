@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
   return (
@@ -9,9 +10,11 @@ export default function HomePage() {
           <p className="text-xl text-muted-foreground mb-8">
             전세사기 예방을 위한 안전한 부동산 검증 서비스
           </p>
-          <Button size="lg" className="mr-4">
-            시작하기
-          </Button>
+          <Link to="/login">
+            <Button size="lg" className="mr-4">
+              시작하기
+            </Button>
+          </Link>
           <Button variant="outline" size="lg">
             더 알아보기
           </Button>
