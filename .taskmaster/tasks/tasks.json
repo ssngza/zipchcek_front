@@ -158,7 +158,7 @@
         "id": 3,
         "title": "메인 업로드 화면 UI 개발",
         "description": "PDF 업로드가 가능한 메인 화면 UI를 구현합니다. 등기부 발급 가이드 버튼도 포함합니다.",
-        "status": "pending",
+        "status": "in-progress",
         "dependencies": [
           2
         ],
@@ -172,7 +172,7 @@
             "description": "업로드 화면의 전체적인 레이아웃 구조 설계 및 구현",
             "dependencies": [],
             "details": "- 전체 페이지 그리드 레이아웃 설계\n- 컨테이너 및 섹션 구분\n- 여백 및 정렬 설정\n- 기본 색상 및 테마 적용\n- 테스트: 다양한 화면 크기에서 레이아웃 확인",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -813,7 +813,7 @@
     ],
     "metadata": {
       "created": "2025-06-22T07:46:06.249Z",
-      "updated": "2025-06-23T15:25:40.190Z",
+      "updated": "2025-06-23T15:31:58.733Z",
       "description": "Tasks for master context"
     }
   },

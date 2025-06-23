@@ -3,6 +3,7 @@ import "./App.css";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import UploadPage from "./pages/UploadPage";
 
 function App() {
   return (
@@ -12,10 +13,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route
-            path="/upload"
-            element={<div>Upload Page (Coming Soon)</div>}
-          />
+          <Route path="/upload" element={<UploadPage />} />
           <Route path="*" element={<div>404 - Page Not Found</div>} />
         </Routes>
       </div>
