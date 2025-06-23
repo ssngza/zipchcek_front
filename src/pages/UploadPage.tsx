@@ -1,4 +1,5 @@
 import FileDropzone from "@/components/FileDropzone";
+import RegistrationGuideModal from "@/components/RegistrationGuideModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
@@ -146,9 +147,11 @@ export default function UploadPage() {
                   <p className="text-gray-600 mb-4">
                     등기부등본 발급 방법을 안내해드립니다.
                   </p>
-                  <Button variant="outline" className="w-full">
-                    가이드 보기
-                  </Button>
+                  <RegistrationGuideModal>
+                    <Button variant="outline" className="w-full">
+                      가이드 보기
+                    </Button>
+                  </RegistrationGuideModal>
                 </CardContent>
               </Card>
 
