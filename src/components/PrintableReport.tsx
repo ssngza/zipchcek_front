@@ -8,6 +8,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { Download, Printer, Share2 } from "lucide-react";
 import { useRef } from "react";
+import { toast } from "sonner";
 
 interface PrintableReportProps {
   propertyInfo: {
@@ -40,7 +41,10 @@ export default function PrintableReport({
 
   // 인쇄 다이얼로그 열기
   const handlePrint = () => {
-    window.print();
+    toast.info("인쇄 다이얼로그를 준비하는 중...");
+    setTimeout(() => {
+      window.print();
+    }, 300);
   };
 
   // PDF로 저장
@@ -48,14 +52,17 @@ export default function PrintableReport({
     if (!reportRef.current) return;
 
     try {
-      // 로딩 상태 표시 (실제 구현에서는 상태 관리 추가)
-      const loadingToast = showToast("PDF 생성 중...", "loading");
+      // 로딩 상태 표시
+      toast.loading("PDF 생성 중...", {
+        id: "pdf-loading",
+      });
 
       // HTML을 캔버스로 변환
       const canvas = await html2canvas(reportRef.current, {
         scale: 2, // 해상도 향상
         useCORS: true, // 외부 이미지 허용
         logging: false,
+        backgroundColor: "#ffffff", // 배경색 지정
       });
 
       // 캔버스를 PDF로 변환
@@ -80,11 +87,12 @@ export default function PrintableReport({
       pdf.save("zipcheck-report.pdf");
 
       // 성공 메시지 표시
-      hideToast(loadingToast);
-      showToast("PDF가 성공적으로 저장되었습니다!", "success");
+      toast.dismiss("pdf-loading");
+      toast.success("PDF가 성공적으로 저장되었습니다!");
     } catch (error) {
       console.error("PDF 생성 중 오류 발생:", error);
-      showToast("PDF 생성 중 오류가 발생했습니다.", "error");
+      toast.dismiss("pdf-loading");
+      toast.error("PDF 생성 중 오류가 발생했습니다.");
     }
   };
 
@@ -92,24 +100,11 @@ export default function PrintableReport({
   const handleShare = () => {
     try {
       navigator.clipboard.writeText(window.location.href);
-      showToast("링크가 클립보드에 복사되었습니다!", "success");
+      toast.success("링크가 클립보드에 복사되었습니다!");
     } catch (error) {
       console.error("클립보드 복사 중 오류 발생:", error);
-      showToast("링크 복사 중 오류가 발생했습니다.", "error");
+      toast.error("링크 복사 중 오류가 발생했습니다.");
     }
-  };
-
-  // 임시 토스트 함수 (실제 구현에서는 토스트 컴포넌트 사용)
-  const showToast = (
-    message: string,
-    type: "success" | "error" | "loading"
-  ) => {
-    console.log(`[${type}] ${message}`);
-    return Date.now(); // 토스트 ID 반환
-  };
-
-  const hideToast = (id: number) => {
-    console.log(`Toast ${id} hidden`);
   };
 
   // 위험 수준 텍스트 계산

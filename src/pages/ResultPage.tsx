@@ -9,8 +9,11 @@ import PotentialIssuesAnalysis, {
 } from "@/components/PotentialIssuesAnalysis";
 import PrintableReport from "@/components/PrintableReport";
 import RiskScoreGauge from "@/components/RiskScoreGauge";
+import TermDictionary from "@/components/TermDictionary";
+import TermTooltip from "@/components/TermTooltip";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import termDefinitions from "@/data/termDefinitions";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -295,6 +298,7 @@ export default function ResultPage() {
           variant="outline"
           onClick={togglePrintMode}
           className="ml-auto block"
+          aria-label={showPrintable ? "일반 보기로 전환" : "인쇄용 보기로 전환"}
         >
           {showPrintable ? "일반 보기로 전환" : "인쇄용 보기로 전환"}
         </Button>
@@ -315,16 +319,28 @@ export default function ResultPage() {
         // 일반 결과 페이지 뷰
         <>
           {/* 헤더 네비게이션 */}
-          <header className="bg-white shadow-sm border-b">
+          <header
+            className="bg-white shadow-sm border-b sticky top-0 z-10"
+            role="banner"
+          >
             <div className="container mx-auto px-4 py-4">
               <div className="flex items-center justify-between">
                 {/* 로고 */}
-                <Link to="/" className="flex items-center space-x-2">
-                  <h1 className="text-2xl font-bold text-primary">ZipCheck</h1>
+                <Link
+                  to="/"
+                  className="flex items-center space-x-2"
+                  aria-label="ZipCheck 홈으로 이동"
+                >
+                  <h1 className="text-xl md:text-2xl font-bold text-primary">
+                    ZipCheck
+                  </h1>
                 </Link>
 
                 {/* 네비게이션 메뉴 */}
-                <nav className="hidden md:flex items-center space-x-6">
+                <nav
+                  className="hidden md:flex items-center space-x-6"
+                  aria-label="주요 메뉴"
+                >
                   <Link
                     to="/upload"
                     className="text-gray-700 hover:text-primary transition-colors"
@@ -339,8 +355,36 @@ export default function ResultPage() {
                   </Link>
                 </nav>
 
+                {/* 모바일 메뉴 버튼 (실제 구현 시 햄버거 메뉴 추가) */}
+                <div className="md:hidden">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1"
+                    aria-label="모바일 메뉴 열기"
+                    aria-expanded="false"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="4" x2="20" y1="12" y2="12"></line>
+                      <line x1="4" x2="20" y1="6" y2="6"></line>
+                      <line x1="4" x2="20" y1="18" y2="18"></line>
+                    </svg>
+                    <span className="sr-only">메뉴</span>
+                  </Button>
+                </div>
+
                 {/* 사용자 메뉴 */}
-                <div className="flex items-center space-x-4">
+                <div className="hidden md:flex items-center space-x-4">
                   <Button variant="outline" size="sm">
                     로그아웃
                   </Button>
@@ -350,30 +394,30 @@ export default function ResultPage() {
           </header>
 
           {/* 메인 컨텐츠 */}
-          <main className="container mx-auto px-4 py-8">
+          <main className="container mx-auto px-4 py-6 md:py-8" role="main">
             <div className="max-w-4xl mx-auto">
               {/* 페이지 타이틀 */}
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              <div className="text-center mb-6 md:mb-8">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4">
                   분석 결과
                 </h1>
-                <p className="text-lg text-gray-600">
+                <p className="text-base md:text-lg text-gray-600">
                   등기부등본 분석이 완료되었습니다
                 </p>
               </div>
 
               {/* 결과 카드 */}
-              <Card className="mb-8 shadow-lg">
-                <CardHeader className="bg-green-50">
+              <Card className="mb-6 md:mb-8 shadow-lg">
+                <CardHeader className="bg-green-50 p-4 md:p-6">
                   <div className="flex flex-col md:flex-row items-center justify-between">
-                    <CardTitle className="text-xl text-green-800 mb-4 md:mb-0">
+                    <CardTitle className="text-lg md:text-xl text-green-800 mb-4 md:mb-0">
                       안전 등급: 안전
                     </CardTitle>
                     {/* 위험 점수 게이지 추가 */}
                     <RiskScoreGauge score={riskScore} size="md" />
                   </div>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent className="p-4 md:p-6">
                   <p className="text-gray-700 mb-4">
                     분석된 등기부등본에서 전세사기 위험 요소가 발견되지
                     않았습니다.
@@ -425,9 +469,19 @@ export default function ResultPage() {
                     권리관계 요약
                   </h3>
                   <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700 mb-6">
-                    <li>현재 설정된 근저당권 없음</li>
-                    <li>압류, 가압류, 가처분 등 권리침해 사항 없음</li>
-                    <li>전세권 설정 내역 없음</li>
+                    <li>
+                      현재 설정된{" "}
+                      <TermTooltip definition={termDefinitions.근저당권} /> 없음
+                    </li>
+                    <li>
+                      <TermTooltip definition={termDefinitions.가압류} />,{" "}
+                      <TermTooltip definition={termDefinitions.가처분} /> 등
+                      권리침해 사항 없음
+                    </li>
+                    <li>
+                      <TermTooltip definition={termDefinitions.전세권} /> 설정
+                      내역 없음
+                    </li>
                     <li>소유권 이전 제한 사항 없음</li>
                   </ul>
 
@@ -436,9 +490,14 @@ export default function ResultPage() {
                       AI 분석 결과
                     </h3>
                     <p className="text-sm text-blue-700">
-                      이 등기부등본은 전세사기 위험도가 낮습니다. 소유권 관계가
-                      명확하고, 권리침해 사항이 없으며, 근저당권 등 채권 관계가
-                      설정되어 있지 않습니다.
+                      이 <TermTooltip definition={termDefinitions.등기부등본} />
+                      은 <TermTooltip
+                        definition={termDefinitions.전세사기}
+                      />{" "}
+                      위험도가 낮습니다. 소유권 관계가 명확하고, 권리침해 사항이
+                      없으며,{" "}
+                      <TermTooltip definition={termDefinitions.근저당권} /> 등
+                      채권 관계가 설정되어 있지 않습니다.
                     </p>
                   </div>
 
@@ -451,34 +510,48 @@ export default function ResultPage() {
               {/* 잠재적 문제 분석 컴포넌트 추가 */}
               <PotentialIssuesAnalysis
                 issues={potentialIssues}
-                className="mb-8 shadow-lg"
+                className="mb-6 md:mb-8 shadow-lg"
               />
 
               {/* 사기 방지 체크리스트 컴포넌트 추가 */}
               <FraudPreventionChecklist
                 items={fraudPreventionItems}
                 propertyId="test-property-123"
-                className="mb-8 shadow-lg"
+                className="mb-6 md:mb-8 shadow-lg"
               />
 
               {/* 계약서 준비 가이드라인 컴포넌트 추가 */}
               <ContractPreparationGuide
                 steps={contractGuideSteps}
-                className="mb-8 shadow-lg"
+                className="mb-6 md:mb-8 shadow-lg"
+              />
+
+              {/* 용어 사전 컴포넌트 추가 */}
+              <TermDictionary
+                terms={termDefinitions}
+                className="mb-6 md:mb-8 shadow-lg"
               />
 
               {/* 새 분석 버튼 */}
               <div className="text-center">
                 <Link to="/upload">
-                  <Button variant="outline">새로운 등기부등본 분석하기</Button>
+                  <Button
+                    variant="outline"
+                    aria-label="새로운 등기부등본 분석하기"
+                  >
+                    새로운 등기부등본 분석하기
+                  </Button>
                 </Link>
               </div>
             </div>
           </main>
 
           {/* 푸터 */}
-          <footer className="bg-white border-t mt-16">
-            <div className="container mx-auto px-4 py-8">
+          <footer
+            className="bg-white border-t mt-8 md:mt-16"
+            role="contentinfo"
+          >
+            <div className="container mx-auto px-4 py-6 md:py-8">
               <div className="text-center text-gray-500">
                 <p>© 2024 ZipCheck. 모든 권리 보유.</p>
               </div>

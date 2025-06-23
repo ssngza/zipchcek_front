@@ -1,3 +1,4 @@
+import TermTooltip from "@/components/TermTooltip";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -6,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import termDefinitions from "@/data/termDefinitions";
 import {
   AlertCircle,
   AlertTriangle,
@@ -167,7 +169,10 @@ export default function PotentialIssuesAnalysis({
         <CardHeader>
           <CardTitle className="text-xl">잠재적 문제 분석</CardTitle>
           <CardDescription>
-            등기부등본에서 발견된 잠재적 문제점 분석 결과입니다.
+            <TermTooltip definition={termDefinitions.등기부등본}>
+              등기부등본
+            </TermTooltip>
+            에서 발견된 잠재적 문제점 분석 결과입니다.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -178,7 +183,11 @@ export default function PotentialIssuesAnalysis({
                 문제가 발견되지 않았습니다
               </h3>
               <p className="text-gray-500">
-                분석된 등기부등본에서 잠재적인 문제점이 발견되지 않았습니다.
+                분석된{" "}
+                <TermTooltip definition={termDefinitions.등기부등본}>
+                  등기부등본
+                </TermTooltip>
+                에서 잠재적인 문제점이 발견되지 않았습니다.
               </p>
             </div>
           </div>
@@ -190,139 +199,158 @@ export default function PotentialIssuesAnalysis({
   return (
     <Card className={`${className}`}>
       <CardHeader>
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
-            <CardTitle className="text-xl">잠재적 문제 분석</CardTitle>
+            <CardTitle className="text-lg md:text-xl">
+              잠재적 문제 분석
+            </CardTitle>
             <CardDescription>
-              등기부등본에서 발견된 잠재적 문제점 분석 결과입니다.
+              등기부등본에서 발견된 잠재적 문제 사항입니다
             </CardDescription>
           </div>
-          <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => toggleAllCategories(true)}
-            >
-              모두 펼치기
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => toggleAllCategories(false)}
-            >
-              모두 접기
-            </Button>
-          </div>
+          {issues.length > 0 && (
+            <div className="flex items-center space-x-2 mt-2 md:mt-0">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={toggleAllCategories}
+                className="text-xs md:text-sm"
+              >
+                {Object.values(expandedCategories).every(Boolean) ? (
+                  <>
+                    <ChevronUp className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    모두 접기
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-3 h-3 md:w-4 md:h-4 mr-1" />
+                    모두 펼치기
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* 카테고리별 문제 목록 */}
-        {Object.entries(issuesByCategory).map(([category, categoryIssues]) => {
-          const typedCategory = category as IssueCategory;
-          const isExpanded = expandedCategories[typedCategory];
-
-          // 카테고리 내 가장 높은 심각도 찾기
-          let highestSeverity: IssueSeverity = "none";
-          for (const issue of categoryIssues) {
-            if (
-              issue.severity === "high" ||
-              (issue.severity === "medium" && highestSeverity !== "high") ||
-              (issue.severity === "low" && highestSeverity === "none")
-            ) {
-              highestSeverity = issue.severity;
-            }
-          }
-
-          const { bgColor, textColor, borderColor, Icon } =
-            severityConfig[highestSeverity];
-
-          return (
-            <div key={category} className={`border rounded-lg ${borderColor}`}>
-              {/* 카테고리 헤더 */}
-              <div
-                className={`${bgColor} ${textColor} p-3 rounded-t-lg flex justify-between items-center cursor-pointer`}
-                onClick={() => toggleCategory(typedCategory)}
+      <CardContent>
+        {/* 문제가 없는 경우 */}
+        {issues.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8">
+            <CheckCircle2 className="w-12 h-12 text-green-500 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              문제가 발견되지 않았습니다
+            </h3>
+            <p className="text-gray-500 text-center max-w-md">
+              분석된 등기부등본에서 잠재적 문제 사항이 발견되지 않았습니다. 이는
+              일반적으로 안전한 거래를 의미합니다.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* 카테고리 필터 */}
+            <div className="flex flex-wrap gap-2 mb-4 overflow-x-auto pb-2">
+              <Button
+                variant={selectedCategory === null ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedCategory(null)}
+                className="text-xs md:text-sm whitespace-nowrap"
               >
-                <div className="flex items-center space-x-2">
-                  <Icon className="h-5 w-5" />
-                  <h3 className="font-medium">
-                    {categoryNames[typedCategory]} ({categoryIssues.length})
-                  </h3>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {highestSeverity !== "none" && (
-                    <span className="text-sm">
-                      최고 심각도: {severityNames[highestSeverity]}
-                    </span>
-                  )}
-                  {isExpanded ? (
-                    <ChevronUp className="h-5 w-5" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5" />
-                  )}
-                </div>
-              </div>
-
-              {/* 카테고리 내용 */}
-              {isExpanded && (
-                <div className="p-3 space-y-3">
-                  {categoryIssues.map(issue => {
-                    const { bgColor, textColor, Icon } =
-                      severityConfig[issue.severity];
-                    const isIssueExpanded = expandedIssues[issue.id];
-
-                    return (
-                      <div key={issue.id} className="border rounded-lg">
-                        {/* 문제 헤더 */}
-                        <div
-                          className={`${bgColor} ${textColor} p-2 rounded-t-lg flex justify-between items-center cursor-pointer`}
-                          onClick={() => toggleIssue(issue.id)}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <Icon className="h-4 w-4" />
-                            <h4 className="font-medium">{issue.title}</h4>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-xs">
-                              심각도: {severityNames[issue.severity]}
-                            </span>
-                            {isIssueExpanded ? (
-                              <ChevronUp className="h-4 w-4" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4" />
-                            )}
-                          </div>
-                        </div>
-
-                        {/* 문제 상세 내용 */}
-                        {isIssueExpanded && (
-                          <div className="p-3 space-y-2">
-                            <div>
-                              <h5 className="text-sm font-medium text-gray-700">
-                                설명
-                              </h5>
-                              <p className="text-sm text-gray-600">
-                                {issue.description}
-                              </p>
-                            </div>
-                            <div>
-                              <h5 className="text-sm font-medium text-gray-700">
-                                권장 조치
-                              </h5>
-                              <p className="text-sm text-gray-600">
-                                {issue.recommendation}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                전체 ({issues.length})
+              </Button>
+              {Object.entries(categoryCounts).map(([category, count]) => (
+                <Button
+                  key={category}
+                  variant={
+                    selectedCategory === category ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => setSelectedCategory(category)}
+                  className="text-xs md:text-sm whitespace-nowrap"
+                >
+                  {categoryNames[category as IssueCategory]} ({count})
+                </Button>
+              ))}
             </div>
-          );
-        })}
+
+            {/* 심각도 범례 */}
+            <div className="flex flex-wrap gap-x-4 gap-y-2 mb-4">
+              <div className="flex items-center">
+                <AlertCircle className="w-4 h-4 text-red-500 mr-1" />
+                <span className="text-xs md:text-sm">높음</span>
+              </div>
+              <div className="flex items-center">
+                <AlertTriangle className="w-4 h-4 text-amber-500 mr-1" />
+                <span className="text-xs md:text-sm">중간</span>
+              </div>
+              <div className="flex items-center">
+                <AlertTriangle className="w-4 h-4 text-blue-500 mr-1" />
+                <span className="text-xs md:text-sm">낮음</span>
+              </div>
+            </div>
+
+            {/* 문제 목록 */}
+            <div className="space-y-4">
+              {filteredIssues.map(issue => (
+                <div
+                  key={issue.id}
+                  className="border rounded-lg overflow-hidden"
+                >
+                  <div
+                    className="flex items-center p-3 md:p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+                    onClick={() => toggleIssue(issue.id)}
+                  >
+                    {/* 심각도 아이콘 */}
+                    <div className="mr-3 flex-shrink-0">
+                      {issue.severity === "high" ? (
+                        <AlertCircle className="w-5 h-5 text-red-500" />
+                      ) : issue.severity === "medium" ? (
+                        <AlertTriangle className="w-5 h-5 text-amber-500" />
+                      ) : (
+                        <AlertTriangle className="w-5 h-5 text-blue-500" />
+                      )}
+                    </div>
+
+                    {/* 제목 및 카테고리 */}
+                    <div className="flex-grow">
+                      <h3 className="font-medium text-gray-900 text-sm md:text-base">
+                        {issue.title}
+                      </h3>
+                      <p className="text-xs md:text-sm text-gray-500">
+                        {categoryNames[issue.category]}
+                      </p>
+                    </div>
+
+                    {/* 확장/축소 아이콘 */}
+                    <div className="ml-2 flex-shrink-0">
+                      {expandedIssues.includes(issue.id) ? (
+                        <ChevronUp className="w-4 h-4 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-gray-500" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 확장된 내용 */}
+                  {expandedIssues.includes(issue.id) && (
+                    <div className="p-3 md:p-4 border-t">
+                      <p className="text-sm md:text-base text-gray-700 mb-4">
+                        {issue.description}
+                      </p>
+                      <div className="bg-amber-50 p-3 rounded-md">
+                        <h4 className="font-medium text-amber-800 text-xs md:text-sm mb-1">
+                          권장사항
+                        </h4>
+                        <p className="text-xs md:text-sm text-amber-700">
+                          {issue.recommendation}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
