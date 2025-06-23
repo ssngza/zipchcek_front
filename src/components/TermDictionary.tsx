@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { KeyboardEvent, useMemo, useState } from "react";
+import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 
 interface TermDefinition {
   term: string;
@@ -31,6 +31,40 @@ export default function TermDictionary({
 
   // 선택된 카테고리 상태
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // 용어 요소 참조를 저장할 객체
+  const termRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  // URL 해시에서 용어 가져오기 및 스크롤 처리
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.slice(1); // '#' 제거
+
+      if (hash) {
+        const decodedHash = decodeURIComponent(hash);
+
+        // 해시가 있으면 검색어 설정 및 카테고리 초기화
+        setSearchQuery(decodedHash);
+        setSelectedCategory(null);
+
+        // 약간의 지연 후 해당 용어로 스크롤 (렌더링 시간 고려)
+        setTimeout(() => {
+          const termElement = termRefs.current[decodedHash];
+          if (termElement) {
+            termElement.scrollIntoView({ behavior: "smooth", block: "center" });
+            termElement.classList.add("bg-yellow-50");
+            setTimeout(() => {
+              termElement.classList.remove("bg-yellow-50");
+              termElement.classList.add("bg-white");
+              setTimeout(() => {
+                termElement.classList.remove("bg-white");
+              }, 500);
+            }, 1500);
+          }
+        }, 500);
+      }
+    }
+  }, []);
 
   // 용어 카테고리 추출 함수
   const getCategoryFromTerm = (term: string): string => {
@@ -162,8 +196,10 @@ export default function TermDictionary({
             {filteredTerms.map(term => (
               <div
                 key={term.term}
-                className="border rounded-lg p-4"
+                className="border rounded-lg p-4 transition-colors duration-500"
                 role="listitem"
+                id={term.term}
+                ref={el => (termRefs.current[term.term] = el)}
               >
                 <h3 className="font-medium text-gray-900 mb-1">{term.term}</h3>
                 <p className="text-sm text-gray-600 mb-2">{term.definition}</p>

@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 import { KeyboardEvent, ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 // 용어 설명 인터페이스
 export interface TermDefinition {
@@ -19,12 +20,16 @@ interface TermTooltipProps {
   definition: TermDefinition;
   children?: ReactNode;
   showIcon?: boolean;
+  showDictionaryLink?: boolean; // 용어 사전 링크 표시 여부
+  dictionaryLinkId?: string; // 용어 사전에서 해당 용어의 ID나 앵커
 }
 
 export default function TermTooltip({
   definition,
   children,
   showIcon = true,
+  showDictionaryLink = true,
+  dictionaryLinkId,
 }: TermTooltipProps) {
   // 키보드 이벤트 처리 (Enter 또는 Space 키로 툴팁 열기)
   const handleKeyDown = (e: KeyboardEvent<HTMLSpanElement>) => {
@@ -32,6 +37,13 @@ export default function TermTooltip({
       e.preventDefault();
       // 툴팁은 Shadcn UI에서 자동으로 처리됨
     }
+  };
+
+  // 용어 사전 링크 생성
+  const getDictionaryLink = () => {
+    // 특정 용어로 바로 이동하기 위한 해시 추가
+    const hash = dictionaryLinkId || definition.term;
+    return `/dictionary#${encodeURIComponent(hash)}`;
   };
 
   return (
@@ -70,17 +82,28 @@ export default function TermTooltip({
                 {definition.example}
               </div>
             )}
-            {definition.link && (
-              <a
-                href={definition.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-blue-600 hover:underline mt-2 inline-block"
-                aria-label={`${definition.term}에 대해 더 알아보기 (새 탭에서 열림)`}
-              >
-                더 알아보기
-              </a>
-            )}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {definition.link && (
+                <a
+                  href={definition.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:underline inline-block"
+                  aria-label={`${definition.term}에 대해 더 알아보기 (새 탭에서 열림)`}
+                >
+                  더 알아보기
+                </a>
+              )}
+              {showDictionaryLink && (
+                <Link
+                  to={getDictionaryLink()}
+                  className="text-xs text-blue-600 hover:underline inline-block"
+                  aria-label={`${definition.term} 용어 사전에서 보기`}
+                >
+                  용어 사전에서 보기
+                </Link>
+              )}
+            </div>
           </div>
         </TooltipContent>
       </Tooltip>
