@@ -2,6 +2,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import TermDictionary from "./components/TermDictionary";
 import termDefinitions from "./data/termDefinitions";
+import HistoryPage from "./pages/HistoryPage";
 import HomePage from "./pages/HomePage";
 import LoadingPage from "./pages/LoadingPage";
 import LoginPage from "./pages/LoginPage";
@@ -20,6 +21,7 @@ function App() {
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/loading" element={<LoadingPage />} />
           <Route path="/result" element={<ResultPage />} />
+          <Route path="/history" element={<HistoryPage />} />
           <Route
             path="/dictionary"
             element={
