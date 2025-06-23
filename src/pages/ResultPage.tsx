@@ -1,8 +1,12 @@
+import RiskScoreGauge from "@/components/RiskScoreGauge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 
 export default function ResultPage() {
+  // 테스트용 위험 점수 (실제로는 API에서 받아올 값)
+  const riskScore = 15; // 0-100 사이의 값 (낮을수록 안전)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* 헤더 네비게이션 */}
@@ -54,9 +58,13 @@ export default function ResultPage() {
           {/* 결과 카드 */}
           <Card className="mb-8 shadow-lg">
             <CardHeader className="bg-green-50">
-              <CardTitle className="text-xl text-green-800">
-                안전 등급: 안전
-              </CardTitle>
+              <div className="flex flex-col md:flex-row items-center justify-between">
+                <CardTitle className="text-xl text-green-800 mb-4 md:mb-0">
+                  안전 등급: 안전
+                </CardTitle>
+                {/* 위험 점수 게이지 추가 */}
+                <RiskScoreGauge score={riskScore} size="md" />
+              </div>
             </CardHeader>
             <CardContent className="p-6">
               <p className="text-gray-700 mb-4">
