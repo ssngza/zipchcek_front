@@ -5,7 +5,7 @@
         "id": 1,
         "title": "프로젝트 저장소 및 개발 환경 설정",
         "description": "ZipCheck 프로젝트의 저장소를 초기화하고 프론트엔드 개발 환경을 설정합니다.",
-        "status": "in-progress",
+        "status": "done",
         "dependencies": [],
         "priority": "high",
         "details": "1. ZipCheck용 새로운 Git 저장소를 생성합니다.\n2. TypeScript와 함께 Create React App을 사용하여 프론트엔드 프로젝트를 설정합니다.\n3. TailwindCSS (v3.3.2)와 Shadcn UI (v0.1.0)를 설치하고 구성합니다.\n4. 코드 품질을 위해 ESLint (v8.41.0)와 Prettier (v2.8.8)를 설정합니다.\n5. 기본 프로젝트 구조와 README.md를 생성합니다.",
@@ -57,7 +57,7 @@
             "id": 5,
             "title": "프로젝트 구조 및 문서화",
             "description": "기본 프로젝트 구조를 설정하고 README.md 파일을 작성합니다.",
-            "status": "in-progress",
+            "status": "done",
             "dependencies": [
               2,
               3,
@@ -72,7 +72,7 @@
         "id": 2,
         "title": "로그인 화면 UI 개발",
         "description": "로그인 및 회원가입 화면 UI를 구현합니다. 임시 인증으로 로그인 버튼 클릭 시 메인 화면으로 이동합니다.",
-        "status": "pending",
+        "status": "in-progress",
         "dependencies": [
           1
         ],
@@ -84,9 +84,9 @@
             "id": 1,
             "title": "React Router 기본 라우팅 설정",
             "description": "React Router v6.11.2를 사용하여 기본 라우팅 구조를 설정합니다.",
-            "status": "pending",
+            "status": "done",
             "dependencies": [],
-            "details": "",
+            "details": "<info added on 2025-06-23T15:18:15.172Z>\n✅ **완료된 작업:**\n1. **React Router 설치**: react-router-dom@^6.11.2 설치 완료\n2. **기본 라우팅 구조 설정**: \n   - BrowserRouter, Routes, Route 컴포넌트 사용\n   - 5개 기본 라우트 정의:\n     - \"/\" - HomePage (기존)\n     - \"/login\" - 로그인 페이지 (임시 플레이스홀더)\n     - \"/signup\" - 회원가입 페이지 (임시 플레이스홀더)\n     - \"/upload\" - 업로드 페이지 (임시 플레이스홀더)\n     - \"*\" - 404 페이지\n3. **빌드 테스트 성공**: 189.31 kB로 정상 빌드 완료\n\n**구현 상세:**\n- App.tsx에 Router 컴포넌트로 전체 애플리케이션 래핑\n- 각 페이지별 라우트 정의로 후속 작업 준비 완료\n- 404 페이지 처리로 잘못된 경로 접근 방어\n</info added on 2025-06-23T15:18:15.172Z>",
             "testStrategy": ""
           },
           {
@@ -813,7 +813,7 @@
     ],
     "metadata": {
       "created": "2025-06-22T07:46:06.249Z",
-      "updated": "2025-06-23T15:08:43.072Z",
+      "updated": "2025-06-23T15:18:19.802Z",
       "description": "Tasks for master context"
     }
   },
