@@ -8,16 +8,111 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
+interface LoginErrors {
+  email?: string;
+  password?: string;
+  general?: string;
+}
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<LoginFormData>({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState<LoginErrors>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  // 입력 필드 변경 핸들러
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // 입력 시 해당 필드의 에러 제거
+    if (errors[name as keyof LoginErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  // 폼 검증
+  const validateForm = (): boolean => {
+    const newErrors: LoginErrors = {};
+
+    // 이메일 검증
+    if (!formData.email) {
+      newErrors.email = "이메일을 입력해주세요.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "올바른 이메일 형식을 입력해주세요.";
+    }
+
+    // 비밀번호 검증
+    if (!formData.password) {
+      newErrors.password = "비밀번호를 입력해주세요.";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "비밀번호는 최소 6자리 이상이어야 합니다.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // 로그인 처리
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      // TODO: 실제 API 호출로 교체
+      // 임시 로그인 로직 (데모용)
+      await new Promise(resolve => setTimeout(resolve, 1500)); // 1.5초 지연
+
+      // 데모용 간단한 검증
+      if (
+        formData.email === "test@example.com" &&
+        formData.password === "123456"
+      ) {
+        // 로그인 성공
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("userEmail", formData.email);
+        navigate("/"); // 홈페이지로 이동
+      } else {
+        setErrors({ general: "이메일 또는 비밀번호가 올바르지 않습니다." });
+      }
+    } catch (error) {
+      setErrors({
+        general: "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* 로고 섹션 */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">ZipCheck</h1>
-          <p className="text-gray-600">안전한 부동산 거래의 시작</p>
+          <Link
+            to="/"
+            className="inline-block hover:opacity-80 transition-opacity"
+          >
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">ZipCheck</h1>
+            <p className="text-gray-600">안전한 부동산 거래의 시작</p>
+          </Link>
         </div>
 
         {/* 로그인 카드 */}
@@ -31,16 +126,37 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <form className="space-y-4">
+            {/* 전체 에러 메시지 */}
+            {errors.general && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                {errors.general}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* 이메일 입력 */}
               <div className="space-y-2">
                 <Label htmlFor="email">이메일</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
-                  placeholder="your@email.com"
-                  required
+                  placeholder="test@example.com"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={
+                    errors.email
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
+                  }
+                  disabled={isLoading}
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-600">{errors.email}</p>
+                )}
+                <p className="text-xs text-gray-500">
+                  데모용: test@example.com 사용
+                </p>
               </div>
 
               {/* 비밀번호 입력 */}
@@ -48,15 +164,32 @@ export default function LoginPage() {
                 <Label htmlFor="password">비밀번호</Label>
                 <Input
                   id="password"
+                  name="password"
                   type="password"
                   placeholder="••••••••"
-                  required
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className={
+                    errors.password
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
+                  }
+                  disabled={isLoading}
                 />
+                {errors.password && (
+                  <p className="text-sm text-red-600">{errors.password}</p>
+                )}
+                <p className="text-xs text-gray-500">데모용: 123456 사용</p>
               </div>
 
               {/* 로그인 버튼 */}
-              <Button type="submit" className="w-full" size="lg">
-                로그인
+              <Button
+                type="submit"
+                className="w-full"
+                size="lg"
+                disabled={isLoading}
+              >
+                {isLoading ? "로그인 중..." : "로그인"}
               </Button>
             </form>
 
@@ -92,6 +225,17 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* 데모 안내 */}
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h4 className="text-sm font-medium text-blue-900 mb-2">
+            데모 계정 정보
+          </h4>
+          <div className="text-sm text-blue-700 space-y-1">
+            <p>이메일: test@example.com</p>
+            <p>비밀번호: 123456</p>
+          </div>
+        </div>
 
         {/* 푸터 */}
         <div className="text-center mt-8">
