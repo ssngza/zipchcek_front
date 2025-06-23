@@ -1,3 +1,6 @@
+import FraudPreventionChecklist, {
+  ChecklistItem,
+} from "@/components/FraudPreventionChecklist";
 import PotentialIssuesAnalysis, {
   Issue,
 } from "@/components/PotentialIssuesAnalysis";
@@ -46,6 +49,57 @@ export default function ResultPage() {
 
   // 문제가 없는 경우 테스트용 (주석 해제하여 테스트)
   // const potentialIssues: Issue[] = [];
+
+  // 테스트용 사기 방지 체크리스트 항목 (실제로는 API에서 받아올 값)
+  const fraudPreventionItems: ChecklistItem[] = [
+    {
+      id: "1",
+      title: "등기부등본 원본 확인",
+      description:
+        "계약 전 인터넷 등기소에서 직접 발급한 등기부등본을 확인하세요.",
+      importance: "high",
+    },
+    {
+      id: "2",
+      title: "소유자 신분증 대조",
+      description:
+        "등기부등본의 소유자와 계약 당사자의 신분증을 대조하여 일치 여부를 확인하세요.",
+      importance: "high",
+    },
+    {
+      id: "3",
+      title: "건축물대장 확인",
+      description:
+        "건축물대장을 확인하여 불법 건축물 여부와 실제 면적을 확인하세요.",
+      importance: "medium",
+    },
+    {
+      id: "4",
+      title: "현장 방문 확인",
+      description: "실제 부동산을 방문하여 설명과 일치하는지 확인하세요.",
+      importance: "medium",
+    },
+    {
+      id: "5",
+      title: "주변 시세 조사",
+      description:
+        "주변 유사 부동산의 시세를 조사하여 적정 가격인지 확인하세요.",
+      importance: "medium",
+    },
+    {
+      id: "6",
+      title: "공인중개사 자격 확인",
+      description:
+        "거래 중개 공인중개사의 자격증과 중개사무소 등록증을 확인하세요.",
+      importance: "low",
+    },
+    {
+      id: "7",
+      title: "계약서 법무사 검토",
+      description: "계약서 작성 전 법무사나 변호사의 검토를 받으세요.",
+      importance: "high",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -175,6 +229,13 @@ export default function ResultPage() {
           {/* 잠재적 문제 분석 컴포넌트 추가 */}
           <PotentialIssuesAnalysis
             issues={potentialIssues}
+            className="mb-8 shadow-lg"
+          />
+
+          {/* 사기 방지 체크리스트 컴포넌트 추가 */}
+          <FraudPreventionChecklist
+            items={fraudPreventionItems}
+            propertyId="test-property-123"
             className="mb-8 shadow-lg"
           />
 
