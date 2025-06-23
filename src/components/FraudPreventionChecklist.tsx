@@ -39,6 +39,70 @@ const importanceNames = {
   low: "낮음",
 };
 
+// 용어 강조 및 툴팁 처리 함수
+const processTextWithTooltips = (text: string) => {
+  // 용어와 해당 용어 정의 매핑
+  const terms = [
+    { term: "등기부등본", definition: termDefinitions.등기부등본 },
+    { term: "근저당권", definition: termDefinitions.근저당권 },
+    { term: "전세권", definition: termDefinitions.전세권 },
+    { term: "가압류", definition: termDefinitions.가압류 },
+    { term: "가처분", definition: termDefinitions.가처분 },
+    { term: "전세사기", definition: termDefinitions.전세사기 },
+    { term: "대항력", definition: termDefinitions.대항력 },
+    { term: "확정일자", definition: termDefinitions.확정일자 },
+    { term: "우선변제권", definition: termDefinitions.우선변제권 },
+    { term: "임차권", definition: termDefinitions.임차권 },
+    { term: "소유권", definition: termDefinitions.소유권 },
+    { term: "등기권리증", definition: termDefinitions.등기권리증 },
+    { term: "등기필증", definition: termDefinitions.등기필증 },
+    { term: "건축물대장", definition: termDefinitions.건축물대장 },
+    {
+      term: "토지이용계획확인서",
+      definition: termDefinitions.토지이용계획확인서,
+    },
+  ];
+
+  // 텍스트를 분석하여 용어가 포함된 경우 툴팁으로 감싸기
+  let processedText = text;
+  let parts = [text];
+
+  // 용어를 찾아 툴팁으로 대체
+  terms.forEach(({ term, definition }) => {
+    if (definition && text.includes(term)) {
+      parts = [];
+      let remainingText = text;
+
+      // 텍스트에서 해당 용어를 모두 찾아 툴팁으로 대체
+      while (remainingText.includes(term)) {
+        const index = remainingText.indexOf(term);
+        if (index > 0) {
+          parts.push(remainingText.substring(0, index));
+        }
+
+        // 용어를 툴팁으로 대체
+        parts.push(
+          <TermTooltip key={`${term}-${parts.length}`} definition={definition}>
+            {term}
+          </TermTooltip>
+        );
+
+        remainingText = remainingText.substring(index + term.length);
+      }
+
+      // 남은 텍스트 추가
+      if (remainingText) {
+        parts.push(remainingText);
+      }
+
+      // 처리된 결과를 텍스트로 설정
+      text = remainingText;
+    }
+  });
+
+  return parts.length > 1 ? parts : processedText;
+};
+
 export default function FraudPreventionChecklist({
   propertyId = "default",
   items,
@@ -206,94 +270,110 @@ export default function FraudPreventionChecklist({
           </Button>
         </div>
 
-        <div className="space-y-3">
-          {filteredItems.length === 0 ? (
-            <div className="text-center py-8">
-              <CheckCircle2 className="w-12 h-12 text-green-500 mx-auto mb-4" />
-              <p className="text-gray-500">
-                {filter === "checked"
-                  ? "아직 완료한 항목이 없습니다."
-                  : "표시할 항목이 없습니다."}
-              </p>
-            </div>
-          ) : (
-            filteredItems.map(item => {
-              const isChecked = checkedItems.includes(item.id);
-              return (
-                <div
-                  key={item.id}
-                  className={`border rounded-lg p-3 md:p-4 transition-colors ${
-                    isChecked ? "bg-green-50 border-green-200" : "bg-white"
-                  }`}
-                >
-                  <div className="flex items-start">
-                    <div
-                      className={`flex-shrink-0 w-5 h-5 md:w-6 md:h-6 rounded border flex items-center justify-center mr-3 cursor-pointer transition-colors ${
-                        isChecked
-                          ? "bg-green-500 border-green-500"
-                          : "border-gray-300 hover:border-primary"
-                      }`}
-                      onClick={() => toggleItem(item.id)}
-                    >
-                      {isChecked && (
-                        <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-white" />
-                      )}
-                    </div>
-                    <div className="flex-grow">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <h3
-                          className={`font-medium text-sm md:text-base mb-1 md:mb-0 ${
-                            isChecked ? "text-green-700" : "text-gray-900"
-                          }`}
-                        >
-                          {item.title}
-                          {item.importance === "high" && (
-                            <AlertTriangle className="inline-block w-3 h-3 md:w-4 md:h-4 ml-1 text-red-500" />
-                          )}
-                        </h3>
-                        <div className="text-xs md:text-sm text-gray-500 mb-1 md:mb-0">
-                          중요도:{" "}
-                          <span
-                            className={
-                              item.importance === "high"
-                                ? "text-red-500"
-                                : item.importance === "medium"
-                                  ? "text-amber-500"
-                                  : "text-blue-500"
-                            }
-                          >
-                            {importanceNames[item.importance]}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-xs md:text-sm text-gray-600">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {/* 진행 상황 표시 */}
-        <div className="mt-6">
-          <div className="flex justify-between mb-2 text-xs md:text-sm">
-            <span>진행 상황</span>
+        {/* 진행률 표시 */}
+        <div className="mb-6">
+          <div className="flex justify-between text-sm mb-1">
+            <span>완료 진행률</span>
             <span>
-              {completedCount}/{totalCount} 완료
+              {completedCount}/{totalCount} (
+              {totalCount > 0
+                ? Math.round((completedCount / totalCount) * 100)
+                : 0}
+              %)
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div
               className="bg-primary h-2.5 rounded-full"
               style={{
-                width: `${(completedCount / totalCount) * 100}%`,
+                width: `${
+                  totalCount > 0
+                    ? Math.round((completedCount / totalCount) * 100)
+                    : 0
+                }%`,
               }}
             ></div>
           </div>
         </div>
+
+        {/* 체크리스트 항목 */}
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500">표시할 항목이 없습니다.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredItems.map(item => {
+              const isChecked = checkedItems.includes(item.id);
+              const ImportanceIcon =
+                item.importance === "high"
+                  ? AlertTriangle
+                  : item.importance === "medium"
+                    ? Info
+                    : Info;
+              const importanceColor =
+                item.importance === "high"
+                  ? "text-red-500"
+                  : item.importance === "medium"
+                    ? "text-amber-500"
+                    : "text-blue-500";
+
+              return (
+                <div
+                  key={item.id}
+                  className={`border rounded-lg p-3 md:p-4 transition-colors ${
+                    isChecked ? "bg-gray-50" : ""
+                  }`}
+                >
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0 mr-3">
+                      <button
+                        type="button"
+                        onClick={() => toggleItem(item.id)}
+                        className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center border ${
+                          isChecked
+                            ? "bg-primary border-primary text-primary-foreground"
+                            : "border-gray-300"
+                        }`}
+                        aria-label={
+                          isChecked ? "항목 체크 해제하기" : "항목 체크하기"
+                        }
+                      >
+                        {isChecked && (
+                          <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5" />
+                        )}
+                      </button>
+                    </div>
+                    <div className="flex-grow">
+                      <div className="flex items-center mb-1">
+                        <ImportanceIcon
+                          className={`w-3 h-3 md:w-4 md:h-4 mr-1 ${importanceColor}`}
+                        />
+                        <span className="text-xs text-gray-500 mr-2">
+                          {importanceNames[item.importance]}
+                        </span>
+                        <h3
+                          className={`text-sm md:text-base font-medium ${
+                            isChecked ? "text-gray-500" : "text-gray-900"
+                          }`}
+                        >
+                          {processTextWithTooltips(item.title)}
+                        </h3>
+                      </div>
+                      <p
+                        className={`text-xs md:text-sm ${
+                          isChecked ? "text-gray-400" : "text-gray-600"
+                        }`}
+                      >
+                        {processTextWithTooltips(item.description)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

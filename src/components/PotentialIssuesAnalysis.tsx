@@ -93,6 +93,75 @@ const severityConfig: Record<
   },
 };
 
+// 용어 강조 및 툴팁 처리 함수
+const processTextWithTooltips = (text: string) => {
+  // 용어와 해당 용어 정의 매핑
+  const terms = [
+    { term: "등기부등본", definition: termDefinitions.등기부등본 },
+    { term: "근저당권", definition: termDefinitions.근저당권 },
+    { term: "전세권", definition: termDefinitions.전세권 },
+    { term: "가압류", definition: termDefinitions.가압류 },
+    { term: "가처분", definition: termDefinitions.가처분 },
+    { term: "전세사기", definition: termDefinitions.전세사기 },
+    { term: "대항력", definition: termDefinitions.대항력 },
+    { term: "확정일자", definition: termDefinitions.확정일자 },
+    { term: "우선변제권", definition: termDefinitions.우선변제권 },
+    { term: "임차권", definition: termDefinitions.임차권 },
+    { term: "소유권", definition: termDefinitions.소유권 },
+    { term: "등기권리증", definition: termDefinitions.등기권리증 },
+    { term: "등기필증", definition: termDefinitions.등기필증 },
+    { term: "건축물대장", definition: termDefinitions.건축물대장 },
+    {
+      term: "토지이용계획확인서",
+      definition: termDefinitions.토지이용계획확인서,
+    },
+    { term: "선순위", definition: termDefinitions["선순위 권리자"] },
+    { term: "후순위", definition: termDefinitions["선순위 권리자"] },
+    { term: "채권자", definition: termDefinitions.채권자 },
+    { term: "채무자", definition: termDefinitions.채무자 },
+    { term: "담보", definition: termDefinitions.담보 },
+  ];
+
+  // 텍스트를 분석하여 용어가 포함된 경우 툴팁으로 감싸기
+  let processedText = text;
+  let parts = [text];
+
+  // 용어를 찾아 툴팁으로 대체
+  terms.forEach(({ term, definition }) => {
+    if (definition && text.includes(term)) {
+      parts = [];
+      let remainingText = text;
+
+      // 텍스트에서 해당 용어를 모두 찾아 툴팁으로 대체
+      while (remainingText.includes(term)) {
+        const index = remainingText.indexOf(term);
+        if (index > 0) {
+          parts.push(remainingText.substring(0, index));
+        }
+
+        // 용어를 툴팁으로 대체
+        parts.push(
+          <TermTooltip key={`${term}-${parts.length}`} definition={definition}>
+            {term}
+          </TermTooltip>
+        );
+
+        remainingText = remainingText.substring(index + term.length);
+      }
+
+      // 남은 텍스트 추가
+      if (remainingText) {
+        parts.push(remainingText);
+      }
+
+      // 처리된 결과를 텍스트로 설정
+      text = remainingText;
+    }
+  });
+
+  return parts.length > 1 ? parts : processedText;
+};
+
 interface PotentialIssuesAnalysisProps {
   issues: Issue[];
   className?: string;
@@ -114,6 +183,19 @@ export default function PotentialIssuesAnalysis({
     {} as Record<IssueCategory, Issue[]>
   );
 
+  // 카테고리별 이슈 개수
+  const categoryCounts = Object.entries(issuesByCategory).reduce(
+    (acc, [category, issues]) => {
+      acc[category] = issues.length;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  // 선택된 카테고리 상태
+  const [selectedCategory, setSelectedCategory] =
+    useState<IssueCategory | null>(null);
+
   // 카테고리 확장 상태 관리
   const [expandedCategories, setExpandedCategories] = useState<
     Record<IssueCategory, boolean>
@@ -133,9 +215,7 @@ export default function PotentialIssuesAnalysis({
   });
 
   // 문제 확장 상태 관리
-  const [expandedIssues, setExpandedIssues] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [expandedIssues, setExpandedIssues] = useState<string[]>([]);
 
   // 카테고리 토글 함수
   const toggleCategory = (category: IssueCategory) => {
@@ -147,20 +227,27 @@ export default function PotentialIssuesAnalysis({
 
   // 문제 토글 함수
   const toggleIssue = (issueId: string) => {
-    setExpandedIssues(prev => ({
-      ...prev,
-      [issueId]: !prev[issueId],
-    }));
+    setExpandedIssues(prev =>
+      prev.includes(issueId)
+        ? prev.filter(id => id !== issueId)
+        : [...prev, issueId]
+    );
   };
 
   // 모든 카테고리 토글 함수
-  const toggleAllCategories = (expand: boolean) => {
+  const toggleAllCategories = () => {
+    const allExpanded = Object.values(expandedCategories).every(Boolean);
     const newState = {} as Record<IssueCategory, boolean>;
     Object.keys(issuesByCategory).forEach(category => {
-      newState[category as IssueCategory] = expand;
+      newState[category as IssueCategory] = !allExpanded;
     });
     setExpandedCategories(newState);
   };
+
+  // 필터링된 이슈 목록
+  const filteredIssues = selectedCategory
+    ? issuesByCategory[selectedCategory] || []
+    : issues;
 
   // 문제가 없는 경우
   if (issues.length === 0) {
@@ -205,7 +292,10 @@ export default function PotentialIssuesAnalysis({
               잠재적 문제 분석
             </CardTitle>
             <CardDescription>
-              등기부등본에서 발견된 잠재적 문제 사항입니다
+              <TermTooltip definition={termDefinitions.등기부등본}>
+                등기부등본
+              </TermTooltip>
+              에서 발견된 잠재적 문제 사항입니다
             </CardDescription>
           </div>
           {issues.length > 0 && (
@@ -241,8 +331,12 @@ export default function PotentialIssuesAnalysis({
               문제가 발견되지 않았습니다
             </h3>
             <p className="text-gray-500 text-center max-w-md">
-              분석된 등기부등본에서 잠재적 문제 사항이 발견되지 않았습니다. 이는
-              일반적으로 안전한 거래를 의미합니다.
+              분석된{" "}
+              <TermTooltip definition={termDefinitions.등기부등본}>
+                등기부등본
+              </TermTooltip>
+              에서 잠재적 문제 사항이 발견되지 않았습니다. 이는 일반적으로
+              안전한 거래를 의미합니다.
             </p>
           </div>
         ) : (
@@ -264,7 +358,7 @@ export default function PotentialIssuesAnalysis({
                     selectedCategory === category ? "default" : "outline"
                   }
                   size="sm"
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => setSelectedCategory(category as IssueCategory)}
                   className="text-xs md:text-sm whitespace-nowrap"
                 >
                   {categoryNames[category as IssueCategory]} ({count})
@@ -313,7 +407,7 @@ export default function PotentialIssuesAnalysis({
                     {/* 제목 및 카테고리 */}
                     <div className="flex-grow">
                       <h3 className="font-medium text-gray-900 text-sm md:text-base">
-                        {issue.title}
+                        {processTextWithTooltips(issue.title)}
                       </h3>
                       <p className="text-xs md:text-sm text-gray-500">
                         {categoryNames[issue.category]}
@@ -334,14 +428,14 @@ export default function PotentialIssuesAnalysis({
                   {expandedIssues.includes(issue.id) && (
                     <div className="p-3 md:p-4 border-t">
                       <p className="text-sm md:text-base text-gray-700 mb-4">
-                        {issue.description}
+                        {processTextWithTooltips(issue.description)}
                       </p>
                       <div className="bg-amber-50 p-3 rounded-md">
                         <h4 className="font-medium text-amber-800 text-xs md:text-sm mb-1">
                           권장사항
                         </h4>
                         <p className="text-xs md:text-sm text-amber-700">
-                          {issue.recommendation}
+                          {processTextWithTooltips(issue.recommendation)}
                         </p>
                       </div>
                     </div>
