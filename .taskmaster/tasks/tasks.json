@@ -183,7 +183,7 @@
               1
             ],
             "details": "- 드래그 앤 드롭 이벤트 핸들러 구현\n- 드래그 영역 시각적 피드백 추가\n- 파일 타입 검증 로직 구현\n- 다중 파일 처리 기능\n- 테스트: 다양한 파일 형식 및 크기로 드래그 앤 드롭 테스트",
-            "status": "pending",
+            "status": "done",
             "testStrategy": ""
           },
           {
@@ -813,7 +813,7 @@
     ],
     "metadata": {
       "created": "2025-06-22T07:46:06.249Z",
-      "updated": "2025-06-23T15:31:58.733Z",
+      "updated": "2025-06-23T15:36:31.319Z",
       "description": "Tasks for master context"
     }
   },

@@ -1,8 +1,17 @@
+import FileDropzone from "@/components/FileDropzone";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function UploadPage() {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const handleFileSelect = (file: File) => {
+    setSelectedFile(file);
+    console.log("선택된 파일:", file.name, file.size, file.type);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       {/* 헤더 네비게이션 */}
@@ -68,45 +77,60 @@ export default function UploadPage() {
                   <CardTitle className="text-xl">파일 업로드</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {/* 드래그 앤 드롭 영역 */}
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
-                    <div className="space-y-4">
-                      <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg
-                          className="w-8 h-8 text-blue-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-lg font-medium text-gray-900 mb-2">
-                          파일을 드래그하여 업로드하세요
-                        </p>
-                        <p className="text-gray-500">
-                          또는 클릭하여 파일을 선택하세요
-                        </p>
-                      </div>
-                      <Button className="mt-4">파일 선택</Button>
-                    </div>
-                  </div>
+                  {/* 파일 드롭존 */}
+                  <FileDropzone
+                    onFileSelect={handleFileSelect}
+                    acceptedTypes={[".pdf"]}
+                    maxFileSize={10}
+                  />
 
-                  {/* 파일 형식 안내 */}
-                  <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                    <h4 className="text-sm font-medium text-blue-900 mb-2">
-                      지원 파일 형식
-                    </h4>
-                    <p className="text-sm text-blue-700">
-                      PDF 파일만 업로드 가능합니다. (최대 10MB)
-                    </p>
-                  </div>
+                  {/* 선택된 파일 정보 */}
+                  {selectedFile && (
+                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-green-600"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="font-medium text-green-900">
+                              {selectedFile.name}
+                            </p>
+                            <p className="text-sm text-green-700">
+                              {(selectedFile.size / (1024 * 1024)).toFixed(2)}{" "}
+                              MB
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedFile(null)}
+                        >
+                          제거
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 분석 시작 버튼 */}
+                  {selectedFile && (
+                    <div className="mt-6">
+                      <Button className="w-full" size="lg">
+                        등기부등본 분석 시작
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
