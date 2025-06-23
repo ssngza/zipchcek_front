@@ -7,9 +7,10 @@ import HistorySearch from "@/components/HistorySearch";
 import { Navbar } from "@/components/Navbar";
 import { Box, Container, Flex, Heading, Text } from "@/components/ui/base";
 import React, { useMemo, useState } from "react";
+import { toast } from "sonner";
 
-// 임시 데이터
-const mockHistoryData = [
+// 임시 데이터 (상태로 관리하여 삭제 기능 구현)
+const initialMockData = [
   {
     id: "abcd1234efgh5678",
     fileName: "서울시 강남구 역삼동 123-456.pdf",
@@ -34,14 +35,21 @@ const mockHistoryData = [
 ];
 
 const HistoryPage: React.FC = () => {
+  const [historyData, setHistoryData] = useState(initialMockData);
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
 
+  // 분석 기록 삭제 처리
+  const handleDeleteHistory = (id: string) => {
+    setHistoryData(prev => prev.filter(item => item.id !== id));
+    toast.success("분석 기록이 삭제되었습니다.");
+  };
+
   // 필터링 및 정렬된 데이터
   const filteredAndSortedData = useMemo(() => {
     // 1. 검색 및 필터링
-    let filtered = [...mockHistoryData];
+    let filtered = [...historyData];
 
     // 검색어 필터링
     if (searchQuery) {
@@ -81,7 +89,7 @@ const HistoryPage: React.FC = () => {
         return a.riskScore - b.riskScore;
       }
     });
-  }, [sortBy, filterBy, searchQuery]);
+  }, [sortBy, filterBy, searchQuery, historyData]);
 
   // 필터 및 검색 초기화
   const handleResetFilters = () => {
@@ -147,6 +155,7 @@ const HistoryPage: React.FC = () => {
                   analysisDate={item.analysisDate}
                   riskScore={item.riskScore}
                   issueCount={item.issueCount}
+                  onDelete={handleDeleteHistory}
                 />
               ))
             ) : (
