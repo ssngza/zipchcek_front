@@ -124,7 +124,7 @@ const processTextWithTooltips = (text: string) => {
 
   // 텍스트를 분석하여 용어가 포함된 경우 툴팁으로 감싸기
   let processedText = text;
-  let parts = [text];
+  let parts: (string | JSX.Element)[] = [text];
 
   // 용어를 찾아 툴팁으로 대체
   terms.forEach(({ term, definition }) => {
@@ -285,8 +285,8 @@ export default function PotentialIssuesAnalysis({
 
   return (
     <Card className={`${className}`}>
-      <CardHeader>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <CardHeader className="px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
           <div>
             <CardTitle className="text-lg md:text-xl">
               잠재적 문제 분석
@@ -299,12 +299,12 @@ export default function PotentialIssuesAnalysis({
             </CardDescription>
           </div>
           {issues.length > 0 && (
-            <div className="flex items-center space-x-2 mt-2 md:mt-0">
+            <div className="flex items-center">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={toggleAllCategories}
-                className="text-xs md:text-sm"
+                className="text-xs md:text-sm whitespace-nowrap"
               >
                 {Object.values(expandedCategories).every(Boolean) ? (
                   <>
@@ -322,7 +322,7 @@ export default function PotentialIssuesAnalysis({
           )}
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         {/* 문제가 없는 경우 */}
         {issues.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8">
@@ -347,7 +347,7 @@ export default function PotentialIssuesAnalysis({
                 variant={selectedCategory === null ? "default" : "outline"}
                 size="sm"
                 onClick={() => setSelectedCategory(null)}
-                className="text-xs md:text-sm whitespace-nowrap"
+                className="text-xs md:text-sm whitespace-nowrap h-8 px-2 sm:px-3"
               >
                 전체 ({issues.length})
               </Button>
@@ -359,7 +359,7 @@ export default function PotentialIssuesAnalysis({
                   }
                   size="sm"
                   onClick={() => setSelectedCategory(category as IssueCategory)}
-                  className="text-xs md:text-sm whitespace-nowrap"
+                  className="text-xs md:text-sm whitespace-nowrap h-8 px-2 sm:px-3"
                 >
                   {categoryNames[category as IssueCategory]} ({count})
                 </Button>
@@ -383,24 +383,24 @@ export default function PotentialIssuesAnalysis({
             </div>
 
             {/* 문제 목록 */}
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               {filteredIssues.map(issue => (
                 <div
                   key={issue.id}
-                  className="border rounded-lg overflow-hidden"
+                  className="border rounded-lg overflow-hidden transition-shadow hover:shadow-md"
                 >
                   <div
                     className="flex items-center p-3 md:p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
                     onClick={() => toggleIssue(issue.id)}
                   >
                     {/* 심각도 아이콘 */}
-                    <div className="mr-3 flex-shrink-0">
+                    <div className="mr-2 sm:mr-3 flex-shrink-0">
                       {issue.severity === "high" ? (
-                        <AlertCircle className="w-5 h-5 text-red-500" />
+                        <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-red-500" />
                       ) : issue.severity === "medium" ? (
-                        <AlertTriangle className="w-5 h-5 text-amber-500" />
+                        <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-amber-500" />
                       ) : (
-                        <AlertTriangle className="w-5 h-5 text-blue-500" />
+                        <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-blue-500" />
                       )}
                     </div>
 

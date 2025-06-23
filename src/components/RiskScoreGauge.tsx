@@ -1,4 +1,5 @@
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from "chart.js";
+import { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 
 // ChartJS 등록
@@ -54,14 +55,52 @@ export default function RiskScoreGauge({
   const riskLevel = getRiskLevel(validScore);
   const colors = riskLevelColors[riskLevel];
 
-  // 크기에 따른 차트 크기 설정
-  const sizeMap = {
-    sm: { width: 100, height: 100, fontSize: 16, thickness: 10 },
-    md: { width: 160, height: 160, fontSize: 24, thickness: 15 },
-    lg: { width: 220, height: 220, fontSize: 32, thickness: 20 },
-  };
+  // 반응형 크기를 위한 상태
+  const [dimensions, setDimensions] = useState({
+    width: 0,
+    height: 0,
+    fontSize: 0,
+    thickness: 0,
+  });
 
-  const { width, height, fontSize, thickness } = sizeMap[size];
+  // 화면 크기에 따른 크기 조정
+  useEffect(() => {
+    const updateDimensions = () => {
+      // 기본 크기 설정
+      let baseSize = {
+        sm: { width: 100, height: 100, fontSize: 16, thickness: 10 },
+        md: { width: 160, height: 160, fontSize: 24, thickness: 15 },
+        lg: { width: 220, height: 220, fontSize: 32, thickness: 20 },
+      }[size];
+
+      // 모바일 환경에서 크기 조정
+      const isMobile = window.innerWidth < 640;
+      if (isMobile) {
+        // 모바일에서는 크기를 약간 줄임
+        const scaleFactor = {
+          sm: 0.9,
+          md: 0.8,
+          lg: 0.7,
+        }[size];
+
+        baseSize = {
+          width: baseSize.width * scaleFactor,
+          height: baseSize.height * scaleFactor,
+          fontSize: baseSize.fontSize * scaleFactor,
+          thickness: baseSize.thickness * scaleFactor,
+        };
+      }
+
+      setDimensions(baseSize);
+    };
+
+    // 초기 크기 설정
+    updateDimensions();
+
+    // 화면 크기 변경 시 크기 업데이트
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, [size]);
 
   // 차트 데이터
   const chartData = {
@@ -72,7 +111,7 @@ export default function RiskScoreGauge({
         borderWidth: 0,
         circumference: 180,
         rotation: 270,
-        cutout: `${100 - thickness}%`,
+        cutout: `${100 - dimensions.thickness}%`,
       },
     ],
   };
@@ -87,13 +126,16 @@ export default function RiskScoreGauge({
     },
   };
 
+  // 차트가 준비되지 않았으면 렌더링하지 않음
+  if (dimensions.width === 0) return null;
+
   return (
     <div className={`flex flex-col items-center ${className}`}>
       {/* 게이지 차트 */}
       <div
         style={{
-          width: `${width}px`,
-          height: `${height / 2}px`,
+          width: `${dimensions.width}px`,
+          height: `${dimensions.height / 2}px`,
           position: "relative",
         }}
       >
@@ -106,14 +148,14 @@ export default function RiskScoreGauge({
             bottom: "0",
             left: "50%",
             transform: "translateX(-50%)",
-            width: `${width}px`,
+            width: `${dimensions.width}px`,
             textAlign: "center",
           }}
         >
           <div
             className="font-bold"
             style={{
-              fontSize: `${fontSize}px`,
+              fontSize: `${dimensions.fontSize}px`,
               color: colors.primary,
             }}
           >
@@ -126,7 +168,7 @@ export default function RiskScoreGauge({
       {/* 위험 수준 레이블 */}
       {showLabel && (
         <div
-          className={`mt-2 px-3 py-1 rounded-full text-white text-sm font-medium`}
+          className={`mt-2 px-3 py-1 rounded-full text-white text-xs sm:text-sm font-medium`}
           style={{ backgroundColor: colors.primary }}
         >
           {riskLevelText[riskLevel]}

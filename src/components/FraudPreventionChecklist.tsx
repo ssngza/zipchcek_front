@@ -65,7 +65,7 @@ const processTextWithTooltips = (text: string) => {
 
   // 텍스트를 분석하여 용어가 포함된 경우 툴팁으로 감싸기
   let processedText = text;
-  let parts = [text];
+  let parts: (string | JSX.Element)[] = [text];
 
   // 용어를 찾아 툴팁으로 대체
   terms.forEach(({ term, definition }) => {
@@ -143,11 +143,13 @@ export default function FraudPreventionChecklist({
 
   // 항목 체크 상태 변경
   const toggleItem = (id: string) => {
-    setCheckedItems((prev: string[]) =>
-      prev.includes(id)
-        ? prev.filter((itemId: string) => itemId !== id)
-        : [...prev, id]
-    );
+    setCheckedItems((prev: string[]) => {
+      if (prev.includes(id)) {
+        return prev.filter((itemId: string) => itemId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
   };
 
   // 모든 항목 체크/해제
@@ -161,8 +163,8 @@ export default function FraudPreventionChecklist({
 
   return (
     <Card className={className}>
-      <CardHeader>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+      <CardHeader className="px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0">
           <div>
             <CardTitle className="text-lg md:text-xl">
               사기 방지 체크리스트
@@ -174,12 +176,12 @@ export default function FraudPreventionChecklist({
               예방을 위한 필수 확인 사항입니다
             </CardDescription>
           </div>
-          <div className="flex items-center space-x-2 mt-2 md:mt-0">
+          <div className="flex items-center space-x-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleCheckAll(true)}
-              className={`text-xs md:text-sm ${
+              className={`text-xs md:text-sm whitespace-nowrap ${
                 completedCount === totalCount
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
                   : ""
@@ -191,7 +193,7 @@ export default function FraudPreventionChecklist({
               variant="outline"
               size="sm"
               onClick={() => handleCheckAll(false)}
-              className={`text-xs md:text-sm ${
+              className={`text-xs md:text-sm whitespace-nowrap ${
                 completedCount === 0
                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
                   : ""
@@ -202,14 +204,14 @@ export default function FraudPreventionChecklist({
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         {/* 상태 필터 */}
         <div className="mb-4 flex flex-wrap gap-2">
           <Button
             variant={filter === "all" ? "default" : "outline"}
             size="sm"
             onClick={() => setFilter("all")}
-            className="text-xs md:text-sm"
+            className="text-xs md:text-sm h-8 px-2 sm:px-3"
           >
             전체 ({items.length})
           </Button>
@@ -217,7 +219,7 @@ export default function FraudPreventionChecklist({
             variant={filter === "checked" ? "default" : "outline"}
             size="sm"
             onClick={() => setFilter("checked")}
-            className="text-xs md:text-sm"
+            className="text-xs md:text-sm h-8 px-2 sm:px-3"
           >
             완료 ({checkedItems.length})
           </Button>
@@ -225,7 +227,7 @@ export default function FraudPreventionChecklist({
             variant={filter === "unchecked" ? "default" : "outline"}
             size="sm"
             onClick={() => setFilter("unchecked")}
-            className="text-xs md:text-sm"
+            className="text-xs md:text-sm h-8 px-2 sm:px-3"
           >
             미완료 ({items.length - checkedItems.length})
           </Button>
@@ -237,7 +239,7 @@ export default function FraudPreventionChecklist({
             variant={importanceFilter === "all" ? "default" : "outline"}
             size="sm"
             onClick={() => setImportanceFilter("all")}
-            className="text-xs md:text-sm"
+            className="text-xs md:text-sm h-8 px-2 sm:px-3"
           >
             모든 중요도
           </Button>
@@ -245,7 +247,7 @@ export default function FraudPreventionChecklist({
             variant={importanceFilter === "high" ? "default" : "outline"}
             size="sm"
             onClick={() => setImportanceFilter("high")}
-            className="text-xs md:text-sm"
+            className="text-xs md:text-sm h-8 px-2 sm:px-3"
           >
             <AlertTriangle className="w-3 h-3 md:w-4 md:h-4 mr-1 text-red-500" />
             높음
@@ -254,7 +256,7 @@ export default function FraudPreventionChecklist({
             variant={importanceFilter === "medium" ? "default" : "outline"}
             size="sm"
             onClick={() => setImportanceFilter("medium")}
-            className="text-xs md:text-sm"
+            className="text-xs md:text-sm h-8 px-2 sm:px-3"
           >
             <Info className="w-3 h-3 md:w-4 md:h-4 mr-1 text-amber-500" />
             중간
@@ -263,7 +265,7 @@ export default function FraudPreventionChecklist({
             variant={importanceFilter === "low" ? "default" : "outline"}
             size="sm"
             onClick={() => setImportanceFilter("low")}
-            className="text-xs md:text-sm"
+            className="text-xs md:text-sm h-8 px-2 sm:px-3"
           >
             <Info className="w-3 h-3 md:w-4 md:h-4 mr-1 text-blue-500" />
             낮음
@@ -284,7 +286,7 @@ export default function FraudPreventionChecklist({
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div
-              className="bg-primary h-2.5 rounded-full"
+              className="bg-primary h-2.5 rounded-full transition-all duration-300 ease-in-out"
               style={{
                 width: `${
                   totalCount > 0
@@ -326,11 +328,11 @@ export default function FraudPreventionChecklist({
                   }`}
                 >
                   <div className="flex items-start">
-                    <div className="flex-shrink-0 mr-3">
+                    <div className="flex-shrink-0 mr-2 sm:mr-3">
                       <button
                         type="button"
                         onClick={() => toggleItem(item.id)}
-                        className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center border ${
+                        className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center border transition-colors ${
                           isChecked
                             ? "bg-primary border-primary text-primary-foreground"
                             : "border-gray-300"
@@ -345,7 +347,7 @@ export default function FraudPreventionChecklist({
                       </button>
                     </div>
                     <div className="flex-grow">
-                      <div className="flex items-center mb-1">
+                      <div className="flex flex-wrap items-center gap-1 mb-1">
                         <ImportanceIcon
                           className={`w-3 h-3 md:w-4 md:h-4 mr-1 ${importanceColor}`}
                         />

@@ -118,32 +118,32 @@ export default function PrintableReport({
     <div className={className}>
       {/* 인쇄 버튼 그룹 (인쇄 시 숨겨짐) */}
       <div className="flex justify-end mb-4 print-hide">
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={handlePrint}
-            className="flex items-center"
+            className="flex items-center text-xs sm:text-sm h-8 px-2 sm:px-3"
           >
-            <Printer className="w-4 h-4 mr-2" />
+            <Printer className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             인쇄하기
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={handleSavePDF}
-            className="flex items-center"
+            className="flex items-center text-xs sm:text-sm h-8 px-2 sm:px-3"
           >
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             PDF 저장
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={handleShare}
-            className="flex items-center"
+            className="flex items-center text-xs sm:text-sm h-8 px-2 sm:px-3"
           >
-            <Share2 className="w-4 h-4 mr-2" />
+            <Share2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             공유하기
           </Button>
         </div>
@@ -158,10 +158,10 @@ export default function PrintableReport({
         </div>
 
         {/* 메인 결과 카드 */}
-        <Card className="mb-8 print-card">
-          <CardHeader className="bg-green-50 print-header">
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <CardTitle className="text-xl text-green-800 mb-4 md:mb-0">
+        <Card className="mb-6 sm:mb-8 print-card">
+          <CardHeader className="bg-green-50 print-header px-4 sm:px-6 py-4 sm:py-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <CardTitle className="text-lg sm:text-xl text-green-800">
                 안전 등급: {getRiskLevelText(riskScore)}
               </CardTitle>
               <div className="risk-score-gauge">
@@ -169,8 +169,8 @@ export default function PrintableReport({
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
-            <p className="text-gray-700 mb-4">
+          <CardContent className="p-4 sm:p-6">
+            <p className="text-sm sm:text-base text-gray-700 mb-4">
               {riskScore < 30
                 ? "분석된 등기부등본에서 전세사기 위험 요소가 발견되지 않았습니다."
                 : riskScore < 70
@@ -178,10 +178,12 @@ export default function PrintableReport({
                   : "분석된 등기부등본에서 심각한 위험 요소가 발견되었습니다. 계약 전 전문가와 상담하세요."}
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 avoid-break">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium text-gray-900 mb-2">부동산 정보</h3>
-                <ul className="space-y-1 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6 avoid-break">
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                <h3 className="font-medium text-gray-900 text-sm sm:text-base mb-2">
+                  부동산 정보
+                </h3>
+                <ul className="space-y-1 text-xs sm:text-sm">
                   <li>
                     <span className="text-gray-500">주소:</span>{" "}
                     {propertyInfo.address}
@@ -197,9 +199,11 @@ export default function PrintableReport({
                 </ul>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium text-gray-900 mb-2">소유자 정보</h3>
-                <ul className="space-y-1 text-sm">
+              <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                <h3 className="font-medium text-gray-900 text-sm sm:text-base mb-2">
+                  소유자 정보
+                </h3>
+                <ul className="space-y-1 text-xs sm:text-sm">
                   <li>
                     <span className="text-gray-500">소유자:</span>{" "}
                     {ownerInfo.name}
@@ -217,8 +221,10 @@ export default function PrintableReport({
             </div>
 
             <div className="avoid-break">
-              <h3 className="font-medium text-gray-900 mb-2">권리관계 요약</h3>
-              <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700 mb-6">
+              <h3 className="font-medium text-gray-900 text-sm sm:text-base mb-2">
+                권리관계 요약
+              </h3>
+              <ul className="list-disc pl-5 space-y-1 text-xs sm:text-sm text-gray-700 mb-4 sm:mb-6">
                 {issues.length === 0 ? (
                   <>
                     <li>현재 설정된 근저당권 없음</li>
@@ -236,9 +242,11 @@ export default function PrintableReport({
               </ul>
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg mb-6 avoid-break">
-              <h3 className="font-medium text-blue-800 mb-2">AI 분석 결과</h3>
-              <p className="text-sm text-blue-700">
+            <div className="bg-blue-50 p-3 sm:p-4 rounded-lg mb-4 sm:mb-6 avoid-break">
+              <h3 className="font-medium text-blue-800 text-sm sm:text-base mb-2">
+                AI 분석 결과
+              </h3>
+              <p className="text-xs sm:text-sm text-blue-700">
                 {riskScore < 30
                   ? "이 등기부등본은 전세사기 위험도가 낮습니다. 소유권 관계가 명확하고, 권리침해 사항이 없으며, 근저당권 등 채권 관계가 설정되어 있지 않습니다."
                   : riskScore < 70
@@ -251,21 +259,23 @@ export default function PrintableReport({
 
         {/* 잠재적 문제 섹션 */}
         {issues.length > 0 && (
-          <div className="mb-8 avoid-break page-break">
-            <h2 className="text-xl font-bold mb-4">잠재적 문제 분석</h2>
-            <div className="space-y-4">
+          <div className="mb-6 sm:mb-8 avoid-break page-break">
+            <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+              잠재적 문제 분석
+            </h2>
+            <div className="space-y-3 sm:space-y-4">
               {issues.map(issue => (
-                <div key={issue.id} className="border rounded-lg p-4">
+                <div key={issue.id} className="border rounded-lg p-3 sm:p-4">
                   <div className="flex items-start">
                     <div>
-                      <h3 className="font-medium text-gray-900 mb-1">
+                      <h3 className="font-medium text-gray-900 text-sm sm:text-base mb-1">
                         {issue.title}
                       </h3>
-                      <p className="text-sm text-gray-600 mb-2">
+                      <p className="text-xs sm:text-sm text-gray-600 mb-2">
                         {issue.description}
                       </p>
-                      <div className="bg-yellow-50 p-2 rounded">
-                        <p className="text-sm text-yellow-800">
+                      <div className="bg-yellow-50 p-2 sm:p-3 rounded">
+                        <p className="text-xs sm:text-sm text-yellow-800">
                           <strong>권장사항:</strong> {issue.recommendation}
                         </p>
                       </div>
@@ -278,22 +288,26 @@ export default function PrintableReport({
         )}
 
         {/* 체크리스트 섹션 */}
-        <div className="mb-8 avoid-break page-break">
-          <h2 className="text-xl font-bold mb-4">사기 방지 체크리스트</h2>
-          <div className="space-y-4">
+        <div className="mb-6 sm:mb-8 avoid-break page-break">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+            사기 방지 체크리스트
+          </h2>
+          <div className="space-y-3 sm:space-y-4">
             {checklistItems.map(item => (
               <div
                 key={item.id}
-                className="border rounded-lg p-4 checklist-item"
+                className="border rounded-lg p-3 sm:p-4 checklist-item"
               >
                 <div className="flex items-start">
-                  <div className="flex-shrink-0 w-6 h-6 rounded border flex items-center justify-center mr-3">
+                  <div className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded border flex items-center justify-center mr-2 sm:mr-3">
                     {/* 체크박스 (인쇄용) */}
-                    <div className="w-4 h-4 border rounded"></div>
+                    <div className="w-3 h-3 sm:w-4 sm:h-4 border rounded"></div>
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{item.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <h3 className="font-medium text-gray-900 text-sm sm:text-base">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1">
                       {item.description}
                     </p>
                   </div>
@@ -304,38 +318,44 @@ export default function PrintableReport({
         </div>
 
         {/* 계약 가이드 섹션 */}
-        <div className="mb-8 avoid-break">
-          <h2 className="text-xl font-bold mb-4">계약 준비 가이드</h2>
-          <div className="space-y-4">
+        <div className="mb-6 sm:mb-8 avoid-break">
+          <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+            계약 준비 가이드
+          </h2>
+          <div className="space-y-3 sm:space-y-4">
             {contractSteps
               .filter(step => step.contractTypes.includes("jeonse"))
               .map((step, index) => (
                 <div
                   key={step.id}
-                  className="border rounded-lg p-4 accordion-content"
+                  className="border rounded-lg p-3 sm:p-4 accordion-content"
                 >
                   <div className="flex items-center mb-2">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white font-medium mr-3">
-                      {index + 1}
+                    <div className="flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary text-white font-medium mr-2 sm:mr-3">
+                      <span className="text-xs sm:text-sm">{index + 1}</span>
                     </div>
-                    <h3 className="font-medium text-gray-900">{step.title}</h3>
+                    <h3 className="font-medium text-gray-900 text-sm sm:text-base">
+                      {step.title}
+                    </h3>
                   </div>
-                  <p className="text-gray-700 mb-4 pl-11">{step.description}</p>
+                  <p className="text-xs sm:text-sm text-gray-700 mb-3 sm:mb-4 pl-8 sm:pl-11">
+                    {step.description}
+                  </p>
 
                   {/* 필요 문서 목록 */}
                   {step.documents.length > 0 && (
-                    <div className="mb-4 pl-11">
-                      <h4 className="font-medium text-gray-900 mb-2">
+                    <div className="mb-3 sm:mb-4 pl-8 sm:pl-11">
+                      <h4 className="font-medium text-gray-900 text-xs sm:text-sm mb-2">
                         필요 서류
                       </h4>
                       <ul className="space-y-2">
                         {step.documents.map(doc => (
-                          <li key={doc.id} className="text-sm">
+                          <li key={doc.id} className="text-xs sm:text-sm">
                             <strong>{doc.name}</strong>
                             {doc.required && (
                               <span className="text-red-600"> (필수)</span>
                             )}
-                            <div className="text-gray-600">
+                            <div className="text-gray-600 text-xs">
                               {doc.description}
                             </div>
                           </li>
@@ -346,13 +366,16 @@ export default function PrintableReport({
 
                   {/* 팁 목록 */}
                   {step.tips.length > 0 && (
-                    <div className="pl-11">
-                      <h4 className="font-medium text-gray-900 mb-2">
+                    <div className="pl-8 sm:pl-11">
+                      <h4 className="font-medium text-gray-900 text-xs sm:text-sm mb-2">
                         주의사항 및 팁
                       </h4>
-                      <ul className="list-disc pl-5 space-y-1">
+                      <ul className="list-disc pl-4 space-y-1">
                         {step.tips.map((tip, tipIndex) => (
-                          <li key={tipIndex} className="text-sm text-gray-700">
+                          <li
+                            key={tipIndex}
+                            className="text-xs sm:text-sm text-gray-700"
+                          >
                             {tip}
                           </li>
                         ))}
@@ -365,12 +388,12 @@ export default function PrintableReport({
         </div>
 
         {/* 인쇄용 푸터 */}
-        <div className="print-footer print-only mt-8">
-          <p>
+        <div className="print-footer print-only mt-6 sm:mt-8">
+          <p className="text-xs sm:text-sm">
             © 2024 ZipCheck. 이 보고서는 참고용으로만 사용하세요. 법적 조언이
             필요한 경우 전문가와 상담하세요.
           </p>
-          <p>
+          <p className="text-xs sm:text-sm">
             생성일:{" "}
             {new Date().toLocaleDateString("ko-KR", {
               year: "numeric",
