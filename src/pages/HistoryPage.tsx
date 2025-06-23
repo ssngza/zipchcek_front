@@ -3,6 +3,7 @@ import HistoryFilters, {
   FilterOption,
   SortOption,
 } from "@/components/HistoryFilters";
+import HistorySearch from "@/components/HistorySearch";
 import { Navbar } from "@/components/Navbar";
 import { Box, Container, Flex, Heading, Text } from "@/components/ui/base";
 import React, { useMemo, useState } from "react";
@@ -35,12 +36,22 @@ const mockHistoryData = [
 const HistoryPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // 필터링 및 정렬된 데이터
   const filteredAndSortedData = useMemo(() => {
-    // 1. 필터링
+    // 1. 검색 및 필터링
     let filtered = [...mockHistoryData];
 
+    // 검색어 필터링
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(item =>
+        item.fileName.toLowerCase().includes(query)
+      );
+    }
+
+    // 위험도 필터링
     if (filterBy === "high-risk") {
       filtered = filtered.filter(item => item.riskScore >= 70);
     } else if (filterBy === "medium-risk") {
@@ -70,7 +81,14 @@ const HistoryPage: React.FC = () => {
         return a.riskScore - b.riskScore;
       }
     });
-  }, [sortBy, filterBy]);
+  }, [sortBy, filterBy, searchQuery]);
+
+  // 필터 및 검색 초기화
+  const handleResetFilters = () => {
+    setSortBy("date-desc");
+    setFilterBy("all");
+    setSearchQuery("");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100">
@@ -84,6 +102,11 @@ const HistoryPage: React.FC = () => {
           수 있습니다.
         </Text>
 
+        {/* 검색 영역 */}
+        <Box className="mb-4">
+          <HistorySearch onSearch={setSearchQuery} initialQuery={searchQuery} />
+        </Box>
+
         {/* 필터링 및 정렬 영역 */}
         <Box className="mb-8 p-4 bg-white rounded-lg shadow-sm">
           <HistoryFilters
@@ -93,6 +116,24 @@ const HistoryPage: React.FC = () => {
             onFilterChange={setFilterBy}
           />
         </Box>
+
+        {/* 검색 결과 요약 */}
+        {searchQuery && (
+          <Box className="mb-4">
+            <Text className="text-sm">
+              "{searchQuery}" 검색 결과: {filteredAndSortedData.length}개의 항목
+              찾음
+              {filteredAndSortedData.length === 0 && (
+                <button
+                  onClick={handleResetFilters}
+                  className="ml-2 text-primary hover:underline"
+                >
+                  필터 초기화
+                </button>
+              )}
+            </Text>
+          </Box>
+        )}
 
         {/* 분석 기록 목록 영역 */}
         <Box className="bg-white rounded-lg shadow-lg p-6">
@@ -111,10 +152,20 @@ const HistoryPage: React.FC = () => {
             ) : (
               <Box className="p-8 text-center">
                 <Text className="text-gray-500">
-                  {filterBy !== "all"
-                    ? "해당 필터 조건에 맞는 분석 기록이 없습니다."
-                    : "분석 기록이 없습니다."}
+                  {searchQuery
+                    ? `"${searchQuery}"에 대한 검색 결과가 없습니다.`
+                    : filterBy !== "all"
+                      ? "해당 필터 조건에 맞는 분석 기록이 없습니다."
+                      : "분석 기록이 없습니다."}
                 </Text>
+                {(searchQuery || filterBy !== "all") && (
+                  <button
+                    onClick={handleResetFilters}
+                    className="mt-2 text-primary hover:underline"
+                  >
+                    필터 초기화
+                  </button>
+                )}
               </Box>
             )}
           </Flex>
