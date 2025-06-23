@@ -1,3 +1,6 @@
+import ContractPreparationGuide, {
+  ContractStep,
+} from "@/components/ContractPreparationGuide";
 import FraudPreventionChecklist, {
   ChecklistItem,
 } from "@/components/FraudPreventionChecklist";
@@ -98,6 +101,165 @@ export default function ResultPage() {
       title: "계약서 법무사 검토",
       description: "계약서 작성 전 법무사나 변호사의 검토를 받으세요.",
       importance: "high",
+    },
+  ];
+
+  // 테스트용 계약 준비 가이드 데이터 (실제로는 API에서 받아올 값)
+  const contractGuideSteps: ContractStep[] = [
+    {
+      id: "1",
+      title: "계약 전 확인사항",
+      description:
+        "계약 전에 반드시 확인해야 할 사항들입니다. 이 단계에서는 등기부등본과 관련 서류를 확인하고 부동산의 법적 상태를 파악합니다.",
+      documents: [
+        {
+          id: "1-1",
+          name: "등기부등본",
+          description:
+            "부동산의 소유권, 권리관계, 근저당권 등을 확인할 수 있는 공식 문서입니다.",
+          required: true,
+        },
+        {
+          id: "1-2",
+          name: "건축물대장",
+          description: "건물의 공식 정보, 면적, 용도 등을 확인할 수 있습니다.",
+          required: true,
+        },
+        {
+          id: "1-3",
+          name: "토지이용계획확인서",
+          description:
+            "해당 부동산의 용도지역, 규제사항 등을 확인할 수 있습니다.",
+          required: false,
+          url: "https://www.eum.go.kr/",
+        },
+      ],
+      tips: [
+        "등기부등본은 인터넷 등기소에서 직접 발급받아 확인하세요.",
+        "소유자 정보와 신분증을 대조하여 일치 여부를 확인하세요.",
+        "근저당권, 압류, 가압류 등 권리제한 사항이 있는지 확인하세요.",
+      ],
+      contractTypes: ["jeonse", "monthly", "purchase"],
+    },
+    {
+      id: "2",
+      title: "계약서 작성 및 검토",
+      description:
+        "계약서를 작성하고 필요한 경우 전문가의 검토를 받는 단계입니다. 계약 조건과 특약사항을 명확히 기재해야 합니다.",
+      documents: [
+        {
+          id: "2-1",
+          name: "부동산 계약서",
+          description:
+            "계약 당사자, 부동산 정보, 계약 조건 등이 포함된 공식 문서입니다.",
+          required: true,
+          url: "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=1165&ccfNo=1&cciNo=1&cnpClsNo=1",
+        },
+        {
+          id: "2-2",
+          name: "계약금 영수증",
+          description: "계약금 지급 증빙 서류입니다.",
+          required: true,
+        },
+      ],
+      tips: [
+        "계약서에 특약사항을 명확하게 기재하세요.",
+        "가능하면 법무사나 변호사의 검토를 받으세요.",
+        "계약금은 가급적 계좌이체로 지급하고 증빙을 남기세요.",
+      ],
+      contractTypes: ["jeonse", "monthly", "purchase"],
+    },
+    {
+      id: "3",
+      title: "중도금 및 잔금 지급",
+      description:
+        "계약에 따라 중도금과 잔금을 지급하는 단계입니다. 이 단계에서는 자금 안전성을 확보하는 것이 중요합니다.",
+      documents: [
+        {
+          id: "3-1",
+          name: "중도금 영수증",
+          description: "중도금 지급 증빙 서류입니다.",
+          required: false,
+        },
+        {
+          id: "3-2",
+          name: "잔금 영수증",
+          description: "잔금 지급 증빙 서류입니다.",
+          required: true,
+        },
+        {
+          id: "3-3",
+          name: "확정일자 신청서",
+          description:
+            "전세권 설정 또는 임대차계약의 우선순위를 확보하기 위한 서류입니다.",
+          required: true,
+          url: "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?popMenu=ov&csmSeq=1165&ccfNo=3&cciNo=1&cnpClsNo=1",
+        },
+      ],
+      tips: [
+        "잔금 지급 전 등기부등본을 다시 확인하여 새로운 권리제한 사항이 없는지 확인하세요.",
+        "가능하면 에스크로 서비스나 안전결제 시스템을 활용하세요.",
+        "확정일자는 잔금 지급 당일에 받는 것이 좋습니다.",
+      ],
+      contractTypes: ["jeonse", "monthly", "purchase"],
+    },
+    {
+      id: "4",
+      title: "소유권 이전 등기",
+      description:
+        "매매계약의 경우 소유권을 이전하는 등기 절차를 진행하는 단계입니다.",
+      documents: [
+        {
+          id: "4-1",
+          name: "등기 신청서",
+          description: "소유권 이전을 위한 공식 신청 서류입니다.",
+          required: true,
+        },
+        {
+          id: "4-2",
+          name: "매매계약서",
+          description: "인감증명이 날인된 매매계약서 원본입니다.",
+          required: true,
+        },
+        {
+          id: "4-3",
+          name: "등기권리증",
+          description: "이전 소유자의 등기권리증입니다.",
+          required: true,
+        },
+      ],
+      tips: [
+        "소유권 이전 등기는 법무사에게 위임하는 것이 안전합니다.",
+        "등기 완료 후 등기부등본을 다시 확인하여 소유권이 정확히 이전되었는지 확인하세요.",
+        "취득세 납부 기한을 확인하고 기한 내에 납부하세요.",
+      ],
+      contractTypes: ["purchase"],
+    },
+    {
+      id: "5",
+      title: "전세권 설정 등기",
+      description:
+        "전세계약의 경우 전세권 설정 등기를 진행하는 단계입니다. 이는 전세금 보호를 위한 중요한 절차입니다.",
+      documents: [
+        {
+          id: "5-1",
+          name: "전세권 설정 등기 신청서",
+          description: "전세권 설정을 위한 공식 신청 서류입니다.",
+          required: true,
+        },
+        {
+          id: "5-2",
+          name: "전세계약서",
+          description: "인감증명이 날인된 전세계약서 원본입니다.",
+          required: true,
+        },
+      ],
+      tips: [
+        "전세권 설정 등기는 반드시 진행하는 것이 좋습니다.",
+        "등기 완료 후 등기부등본을 다시 확인하여 전세권이 정확히 설정되었는지 확인하세요.",
+        "전세권 설정 비용은 통상 임대인과 임차인이 절반씩 부담하나, 계약서에 명시된 내용을 따르세요.",
+      ],
+      contractTypes: ["jeonse"],
     },
   ];
 
@@ -236,6 +398,12 @@ export default function ResultPage() {
           <FraudPreventionChecklist
             items={fraudPreventionItems}
             propertyId="test-property-123"
+            className="mb-8 shadow-lg"
+          />
+
+          {/* 계약서 준비 가이드라인 컴포넌트 추가 */}
+          <ContractPreparationGuide
+            steps={contractGuideSteps}
             className="mb-8 shadow-lg"
           />
 
