@@ -143,13 +143,13 @@ export default function FraudPreventionChecklist({
 
   // 항목 체크 상태 변경
   const toggleItem = (id: string) => {
-    setCheckedItems((prev: string[]) => {
-      if (prev.includes(id)) {
-        return prev.filter((itemId: string) => itemId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
+    let newCheckedItems;
+    if (checkedItems.includes(id)) {
+      newCheckedItems = checkedItems.filter((itemId: string) => itemId !== id);
+    } else {
+      newCheckedItems = [...checkedItems, id];
+    }
+    setCheckedItems(newCheckedItems);
   };
 
   // 모든 항목 체크/해제

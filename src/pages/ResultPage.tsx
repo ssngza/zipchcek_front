@@ -1,6 +1,7 @@
 import ContractPreparationGuide, {
   ContractStep,
 } from "@/components/ContractPreparationGuide";
+import FeedbackContainer from "@/components/FeedbackContainer";
 import FraudPreventionChecklist, {
   ChecklistItem,
 } from "@/components/FraudPreventionChecklist";
@@ -8,16 +9,19 @@ import PotentialIssuesAnalysis, {
   Issue,
 } from "@/components/PotentialIssuesAnalysis";
 import PrintableReport from "@/components/PrintableReport";
+import RegistrationGuideModal from "@/components/RegistrationGuideModal";
 import RiskScoreGauge from "@/components/RiskScoreGauge";
-import TermDictionary from "@/components/TermDictionary";
-import TermTooltip from "@/components/TermTooltip";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import termDefinitions from "@/data/termDefinitions";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, FileText, Home, Printer } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 export default function ResultPage() {
+  const { propertyId } = useParams<{ propertyId: string }>();
+
   // 인쇄 모드 상태
   const [showPrintable, setShowPrintable] = useState(false);
 
@@ -57,9 +61,6 @@ export default function ResultPage() {
         "가압류 사유와 해제 경위를 확인하고, 현재 다른 채무 관계가 있는지 확인하세요.",
     },
   ];
-
-  // 문제가 없는 경우 테스트용 (주석 해제하여 테스트)
-  // const potentialIssues: Issue[] = [];
 
   // 테스트용 사기 방지 체크리스트 항목 (실제로는 API에서 받아올 값)
   const fraudPreventionItems: ChecklistItem[] = [
@@ -273,15 +274,16 @@ export default function ResultPage() {
 
   // 테스트용 부동산 정보
   const propertyInfo = {
+    id: "property-123",
     address: "서울특별시 강남구 테헤란로 123",
-    area: "84.12㎡",
+    area: "85.5㎡",
     registrationDate: "2022-05-15",
   };
 
   // 테스트용 소유자 정보
   const ownerInfo = {
     name: "홍길동",
-    acquisitionDate: "2020-03-22",
+    acquisitionDate: "2020-03-10",
     ownership: "단독소유",
   };
 
@@ -291,21 +293,103 @@ export default function ResultPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* 인쇄 모드 버튼 */}
-      <div className="container mx-auto px-4 py-4 print-hide">
-        <Button
-          variant="outline"
-          onClick={togglePrintMode}
-          className="ml-auto block"
-          aria-label={showPrintable ? "일반 보기로 전환" : "인쇄용 보기로 전환"}
-        >
-          {showPrintable ? "일반 보기로 전환" : "인쇄용 보기로 전환"}
-        </Button>
+    <div className="container mx-auto px-4 py-6">
+      {/* 상단 네비게이션 */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <div className="flex items-center space-x-2 mb-4 sm:mb-0">
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              <span>돌아가기</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/">
+              <Home className="h-4 w-4 mr-1" />
+              <span>홈</span>
+            </Link>
+          </Button>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RegistrationGuideModal>
+            <Button variant="outline" size="sm">
+              <FileText className="h-4 w-4 mr-1" />
+              <span>등기부등본 발급 가이드</span>
+            </Button>
+          </RegistrationGuideModal>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => window.print()}
+            className="print:hidden"
+          >
+            <Printer className="h-4 w-4 mr-1" />
+            <span>인쇄</span>
+          </Button>
+        </div>
       </div>
 
-      {showPrintable ? (
-        // 인쇄 가능한 보고서 뷰
+      {/* 부동산 정보 헤더 */}
+      <Card className="mb-6">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg sm:text-xl">
+            {propertyInfo.address}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="font-medium">면적:</span> {propertyInfo.area}
+            </div>
+            <div>
+              <span className="font-medium">등기일자:</span>{" "}
+              {propertyInfo.registrationDate}
+            </div>
+            <div>
+              <span className="font-medium">소유자:</span> {ownerInfo.name} (
+              {ownerInfo.ownership})
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 위험 점수 */}
+      <div className="mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">
+          부동산 위험 점수
+        </h2>
+        <div className="flex justify-center">
+          <RiskScoreGauge score={riskScore} size="lg" showLabel />
+        </div>
+      </div>
+
+      {/* 탭 컨텐츠 */}
+      <Tabs defaultValue="issues" className="mb-6">
+        <TabsList className="grid grid-cols-3 mb-4">
+          <TabsTrigger value="issues">잠재적 문제</TabsTrigger>
+          <TabsTrigger value="checklist">사기 방지 체크리스트</TabsTrigger>
+          <TabsTrigger value="guide">계약 준비 가이드</TabsTrigger>
+        </TabsList>
+        <TabsContent value="issues">
+          <PotentialIssuesAnalysis issues={potentialIssues} />
+        </TabsContent>
+        <TabsContent value="checklist">
+          <FraudPreventionChecklist
+            propertyId={propertyId}
+            items={fraudPreventionItems}
+          />
+        </TabsContent>
+        <TabsContent value="guide">
+          <ContractPreparationGuide steps={contractGuideSteps} />
+        </TabsContent>
+      </Tabs>
+
+      {/* 피드백 컴포넌트 */}
+      <Separator className="my-6" />
+      <FeedbackContainer propertyId={propertyId} />
+
+      {/* 인쇄용 보고서 (화면에서는 숨김) */}
+      <div className="hidden print:block">
         <PrintableReport
           propertyInfo={propertyInfo}
           ownerInfo={ownerInfo}
@@ -313,252 +397,8 @@ export default function ResultPage() {
           issues={potentialIssues}
           checklistItems={fraudPreventionItems}
           contractSteps={contractGuideSteps}
-          className="container mx-auto px-4 py-8 max-w-4xl"
         />
-      ) : (
-        // 일반 결과 페이지 뷰
-        <>
-          {/* 헤더 네비게이션 */}
-          <header
-            className="bg-white shadow-sm border-b sticky top-0 z-10"
-            role="banner"
-          >
-            <div className="container mx-auto px-4 py-4">
-              <div className="flex items-center justify-between">
-                {/* 로고 */}
-                <Link
-                  to="/"
-                  className="flex items-center space-x-2"
-                  aria-label="ZipCheck 홈으로 이동"
-                >
-                  <h1 className="text-xl md:text-2xl font-bold text-primary">
-                    ZipCheck
-                  </h1>
-                </Link>
-
-                {/* 네비게이션 메뉴 */}
-                <nav
-                  className="hidden md:flex items-center space-x-6"
-                  aria-label="주요 메뉴"
-                >
-                  <Link
-                    to="/upload"
-                    className="text-gray-700 hover:text-primary transition-colors"
-                  >
-                    새 분석
-                  </Link>
-                  <Link
-                    to="/guide"
-                    className="text-gray-700 hover:text-primary transition-colors"
-                  >
-                    등기부 가이드
-                  </Link>
-                </nav>
-
-                {/* 모바일 메뉴 버튼 (실제 구현 시 햄버거 메뉴 추가) */}
-                <div className="md:hidden">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-1"
-                    aria-label="모바일 메뉴 열기"
-                    aria-expanded="false"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <line x1="4" x2="20" y1="12" y2="12"></line>
-                      <line x1="4" x2="20" y1="6" y2="6"></line>
-                      <line x1="4" x2="20" y1="18" y2="18"></line>
-                    </svg>
-                    <span className="sr-only">메뉴</span>
-                  </Button>
-                </div>
-
-                {/* 사용자 메뉴 */}
-                <div className="hidden md:flex items-center space-x-4">
-                  <Button variant="outline" size="sm">
-                    로그아웃
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          {/* 메인 컨텐츠 */}
-          <main className="container mx-auto px-4 py-6 md:py-8" role="main">
-            <div className="max-w-4xl mx-auto">
-              {/* 페이지 타이틀 */}
-              <div className="text-center mb-6 md:mb-8">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4">
-                  분석 결과
-                </h1>
-                <p className="text-base md:text-lg text-gray-600">
-                  등기부등본 분석이 완료되었습니다
-                </p>
-              </div>
-
-              {/* 결과 카드 */}
-              <Card className="mb-6 md:mb-8 shadow-lg">
-                <CardHeader className="bg-green-50 p-4 md:p-6">
-                  <div className="flex flex-col md:flex-row items-center justify-between">
-                    <CardTitle className="text-lg md:text-xl text-green-800 mb-4 md:mb-0">
-                      안전 등급: 안전
-                    </CardTitle>
-                    {/* 위험 점수 게이지 추가 */}
-                    <RiskScoreGauge score={riskScore} size="md" />
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 md:p-6">
-                  <p className="text-gray-700 mb-4">
-                    분석된 등기부등본에서 전세사기 위험 요소가 발견되지
-                    않았습니다.
-                  </p>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-gray-900 mb-2">
-                        부동산 정보
-                      </h3>
-                      <ul className="space-y-1 text-sm">
-                        <li>
-                          <span className="text-gray-500">주소:</span>{" "}
-                          {propertyInfo.address}
-                        </li>
-                        <li>
-                          <span className="text-gray-500">면적:</span>{" "}
-                          {propertyInfo.area}
-                        </li>
-                        <li>
-                          <span className="text-gray-500">등기일:</span>{" "}
-                          {propertyInfo.registrationDate}
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h3 className="font-medium text-gray-900 mb-2">
-                        소유자 정보
-                      </h3>
-                      <ul className="space-y-1 text-sm">
-                        <li>
-                          <span className="text-gray-500">소유자:</span>{" "}
-                          {ownerInfo.name}
-                        </li>
-                        <li>
-                          <span className="text-gray-500">소유권 취득일:</span>{" "}
-                          {ownerInfo.acquisitionDate}
-                        </li>
-                        <li>
-                          <span className="text-gray-500">지분:</span>{" "}
-                          {ownerInfo.ownership}
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <h3 className="font-medium text-gray-900 mb-2">
-                    권리관계 요약
-                  </h3>
-                  <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700 mb-6">
-                    <li>
-                      현재 설정된{" "}
-                      <TermTooltip definition={termDefinitions.근저당권} /> 없음
-                    </li>
-                    <li>
-                      <TermTooltip definition={termDefinitions.가압류} />,{" "}
-                      <TermTooltip definition={termDefinitions.가처분} /> 등
-                      권리침해 사항 없음
-                    </li>
-                    <li>
-                      <TermTooltip definition={termDefinitions.전세권} /> 설정
-                      내역 없음
-                    </li>
-                    <li>소유권 이전 제한 사항 없음</li>
-                  </ul>
-
-                  <div className="bg-blue-50 p-4 rounded-lg mb-6">
-                    <h3 className="font-medium text-blue-800 mb-2">
-                      AI 분석 결과
-                    </h3>
-                    <p className="text-sm text-blue-700">
-                      이 <TermTooltip definition={termDefinitions.등기부등본} />
-                      은 <TermTooltip
-                        definition={termDefinitions.전세사기}
-                      />{" "}
-                      위험도가 낮습니다. 소유권 관계가 명확하고, 권리침해 사항이
-                      없으며,{" "}
-                      <TermTooltip definition={termDefinitions.근저당권} /> 등
-                      채권 관계가 설정되어 있지 않습니다.
-                    </p>
-                  </div>
-
-                  <div className="flex justify-center">
-                    <Button>상세 보고서 다운로드</Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* 잠재적 문제 분석 컴포넌트 추가 */}
-              <PotentialIssuesAnalysis
-                issues={potentialIssues}
-                className="mb-6 md:mb-8 shadow-lg"
-              />
-
-              {/* 사기 방지 체크리스트 컴포넌트 추가 */}
-              <FraudPreventionChecklist
-                items={fraudPreventionItems}
-                propertyId="test-property-123"
-                className="mb-6 md:mb-8 shadow-lg"
-              />
-
-              {/* 계약서 준비 가이드라인 컴포넌트 추가 */}
-              <ContractPreparationGuide
-                steps={contractGuideSteps}
-                className="mb-6 md:mb-8 shadow-lg"
-              />
-
-              {/* 용어 사전 컴포넌트 추가 */}
-              <TermDictionary
-                terms={termDefinitions}
-                className="mb-6 md:mb-8 shadow-lg"
-              />
-
-              {/* 새 분석 버튼 */}
-              <div className="text-center">
-                <Link to="/upload">
-                  <Button
-                    variant="outline"
-                    aria-label="새로운 등기부등본 분석하기"
-                  >
-                    새로운 등기부등본 분석하기
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </main>
-
-          {/* 푸터 */}
-          <footer
-            className="bg-white border-t mt-8 md:mt-16"
-            role="contentinfo"
-          >
-            <div className="container mx-auto px-4 py-6 md:py-8">
-              <div className="text-center text-gray-500">
-                <p>© 2024 ZipCheck. 모든 권리 보유.</p>
-              </div>
-            </div>
-          </footer>
-        </>
-      )}
+      </div>
     </div>
   );
 }

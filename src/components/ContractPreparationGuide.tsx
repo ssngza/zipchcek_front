@@ -26,6 +26,7 @@ export interface ContractDocument {
   name: string;
   description: string;
   required: boolean;
+  url?: string;
 }
 
 export interface ContractStep {
