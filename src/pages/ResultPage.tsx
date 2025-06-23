@@ -1,3 +1,6 @@
+import PotentialIssuesAnalysis, {
+  Issue,
+} from "@/components/PotentialIssuesAnalysis";
 import RiskScoreGauge from "@/components/RiskScoreGauge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +9,43 @@ import { Link } from "react-router-dom";
 export default function ResultPage() {
   // 테스트용 위험 점수 (실제로는 API에서 받아올 값)
   const riskScore = 15; // 0-100 사이의 값 (낮을수록 안전)
+
+  // 테스트용 잠재적 문제 데이터 (실제로는 API에서 받아올 값)
+  const potentialIssues: Issue[] = [
+    {
+      id: "1",
+      title: "최근 소유권 변경",
+      description:
+        "해당 부동산은 최근 3개월 내에 소유권 변경이 있었습니다. 이는 일반적으로 위험 신호는 아니지만, 추가 확인이 필요할 수 있습니다.",
+      severity: "low",
+      category: "ownership",
+      recommendation:
+        "소유자에게 소유권 취득 경위를 확인하고, 필요시 이전 소유자 정보를 조회하세요.",
+    },
+    {
+      id: "2",
+      title: "근저당권 설정",
+      description:
+        "현재 부동산에 근저당권이 설정되어 있습니다. 채무 불이행 시 경매로 넘어갈 가능성이 있습니다.",
+      severity: "medium",
+      category: "mortgage",
+      recommendation:
+        "근저당권 설정 금액과 채무 상환 계획을 소유자에게 확인하세요. 또한 임대차계약 시 보증금 보호를 위한 우선순위를 확인하는 것이 중요합니다.",
+    },
+    {
+      id: "3",
+      title: "가압류 기록 존재",
+      description:
+        "과거 가압류 기록이 존재합니다. 현재는 해제되었으나, 소유자의 재정 상태에 문제가 있었을 가능성이 있습니다.",
+      severity: "low",
+      category: "rights",
+      recommendation:
+        "가압류 사유와 해제 경위를 확인하고, 현재 다른 채무 관계가 있는지 확인하세요.",
+    },
+  ];
+
+  // 문제가 없는 경우 테스트용 (주석 해제하여 테스트)
+  // const potentialIssues: Issue[] = [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -131,6 +171,12 @@ export default function ResultPage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* 잠재적 문제 분석 컴포넌트 추가 */}
+          <PotentialIssuesAnalysis
+            issues={potentialIssues}
+            className="mb-8 shadow-lg"
+          />
 
           {/* 새 분석 버튼 */}
           <div className="text-center">
