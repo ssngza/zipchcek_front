@@ -19,7 +19,7 @@ export interface TermDefinition {
   term: string;
   definition: string;
   example?: string;
-  link?: string;
+  moreInfoUrl?: string;
 }
 
 interface TermTooltipProps {
@@ -120,9 +120,9 @@ export default function TermTooltip({
               </div>
             )}
             <div className="mt-2 flex flex-wrap gap-2">
-              {definition.link && (
+              {definition.moreInfoUrl && (
                 <a
-                  href={definition.link}
+                  href={definition.moreInfoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-blue-600 hover:underline inline-block"
@@ -186,9 +186,9 @@ export default function TermTooltip({
               </div>
             )}
             <div className="mt-2 flex flex-wrap gap-2">
-              {definition.link && (
+              {definition.moreInfoUrl && (
                 <a
-                  href={definition.link}
+                  href={definition.moreInfoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs text-blue-600 hover:underline inline-block"
