@@ -3,14 +3,32 @@ import RegistrationGuideModal from "@/components/RegistrationGuideModal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
     console.log("선택된 파일:", file.name, file.size, file.type);
+  };
+
+  const handleStartAnalysis = () => {
+    if (!selectedFile) return;
+
+    setIsSubmitting(true);
+
+    // 실제 서버 요청 대신 로딩 페이지로 이동
+    setTimeout(() => {
+      navigate("/loading", {
+        state: {
+          fileSize: selectedFile.size / 1024, // KB 단위로 전달
+          fileName: selectedFile.name,
+        },
+      });
+    }, 500);
   };
 
   return (
@@ -117,6 +135,7 @@ export default function UploadPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setSelectedFile(null)}
+                          disabled={isSubmitting}
                         >
                           제거
                         </Button>
@@ -127,8 +146,13 @@ export default function UploadPage() {
                   {/* 분석 시작 버튼 */}
                   {selectedFile && (
                     <div className="mt-6">
-                      <Button className="w-full" size="lg">
-                        등기부등본 분석 시작
+                      <Button
+                        className="w-full"
+                        size="lg"
+                        onClick={handleStartAnalysis}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? "처리 중..." : "등기부등본 분석 시작"}
                       </Button>
                     </div>
                   )}
