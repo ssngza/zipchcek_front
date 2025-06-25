@@ -1,89 +1,47 @@
 /* 인쇄 시 적용되는 스타일 */
 @media print {
-  /* 전체 페이지 설정 */
-  @page {
-    size: A4;
-    margin: 1.5cm;
-  }
-
-  /* 기본 요소 설정 */
+  /* 전체 페이지 스타일 */
   body {
-    font-family: "Noto Sans KR", sans-serif;
+    background-color: white !important;
+    color: black !important;
     font-size: 12pt;
     line-height: 1.5;
-    background: white !important;
-    color: black !important;
   }
 
-  /* 숨길 요소 */
+  /* 헤더 및 네비게이션 숨기기 */
   header,
-  footer,
   nav,
-  button:not(.print-show),
-  .no-print,
-  .print-hide {
+  .print:hidden,
+  .navbar {
     display: none !important;
   }
 
-  /* 인쇄 시 표시할 요소 */
-  .print-only {
-    display: block !important;
+  /* 인쇄 시 숨길 요소들 */
+  button,
+  .print-hide,
+  .tabs-list,
+  [data-print="hide"] {
+    display: none !important;
   }
 
-  /* 링크 처리 */
-  a {
-    text-decoration: none !important;
-    color: black !important;
-  }
-
-  /* 배경색 및 그림자 제거 */
-  * {
-    background-color: transparent !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-
-  /* 컨테이너 너비 조정 */
+  /* 컨테이너 스타일 */
   .container,
   main,
   .print-container {
     width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
     margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* 카드 스타일 조정 */
+  /* 카드 스타일 */
   .card,
   .print-card {
+    box-shadow: none !important;
     border: 1px solid #ddd !important;
     break-inside: avoid;
-    page-break-inside: avoid;
-    margin-bottom: 1.5rem !important;
   }
 
-  /* 페이지 나누기 방지 */
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  img,
-  table,
-  figure,
-  .avoid-break {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-
-  /* 페이지 나누기 지점 */
-  .page-break {
-    break-after: page;
-    page-break-after: always;
-  }
-
-  /* 텍스트 색상 조정 */
+  /* 텍스트 스타일 */
   h1,
   h2,
   h3,
@@ -91,76 +49,69 @@
   h5,
   h6 {
     color: black !important;
+    page-break-after: avoid;
   }
 
-  /* 테이블 스타일 조정 */
-  table {
-    width: 100% !important;
-    border-collapse: collapse !important;
+  h1 {
+    font-size: 20pt;
+    margin-bottom: 20px;
   }
 
-  table,
-  th,
-  td {
-    border: 1px solid #ddd !important;
+  h2 {
+    font-size: 16pt;
+    margin-top: 20px;
+    margin-bottom: 10px;
   }
 
-  th,
-  td {
-    padding: 8px !important;
-    text-align: left !important;
+  h3 {
+    font-size: 14pt;
   }
 
-  /* 그래프 및 차트 조정 */
-  canvas,
-  .chart-container {
-    max-width: 100% !important;
-    height: auto !important;
+  p,
+  li {
+    font-size: 12pt;
+    orphans: 3;
+    widows: 3;
   }
 
-  /* 특정 컴포넌트 스타일 조정 */
-  .risk-score-gauge {
-    max-width: 150px !important;
-    margin: 0 auto !important;
+  /* 링크 스타일 */
+  a {
+    color: black !important;
+    text-decoration: underline;
   }
 
-  /* 헤더 및 푸터 인쇄용 스타일 */
-  .print-header,
-  .print-footer {
-    display: block !important;
-    text-align: center;
-    margin: 1rem 0;
-  }
-
-  /* 로고 인쇄 스타일 */
-  .print-logo {
-    font-weight: bold;
-    font-size: 18pt;
-    margin-bottom: 0.5rem;
-  }
-
-  /* 페이지 번호 */
-  .print-footer::after {
-    content: "Page " counter(page) " of " counter(pages);
+  a::after {
+    content: " (" attr(href) ")";
     font-size: 10pt;
   }
 
-  /* 확장/축소 버튼 숨기기 */
-  .expand-button,
-  .collapse-button {
-    display: none !important;
+  /* 표 스타일 */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
   }
 
-  /* 체크리스트 항목 모두 표시 */
-  .checklist-item {
-    display: block !important;
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
   }
 
-  /* 인쇄 시 모든 아코디언 콘텐츠 표시 */
-  .accordion-content {
-    display: block !important;
-    height: auto !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+  /* 페이지 나누기 방지 */
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* 페이지 나누기 */
+  .page-break {
+    page-break-after: always;
+  }
+
+  /* 배경색 및 그림자 제거 */
+  * {
+    background-color: transparent !important;
+    box-shadow: none !important;
   }
 }
