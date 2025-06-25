@@ -133,196 +133,172 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* 로고 섹션 */}
-        <div className="text-center mb-8">
-          <Link
-            to="/"
-            className="inline-block hover:opacity-80 transition-opacity"
-          >
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">ZipCheck</h1>
-            <p className="text-gray-600">안전한 부동산 거래의 시작</p>
-          </Link>
-        </div>
+    <div className="w-full max-w-md">
+      {/* 회원가입 카드 */}
+      <Card className="shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-semibold text-center">
+            회원가입
+          </CardTitle>
+          <CardDescription className="text-center">
+            ZipCheck 계정을 만들어 안전한 부동산 거래를 시작하세요
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* 전체 에러 메시지 */}
+          {errors.general && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+              {errors.general}
+            </div>
+          )}
 
-        {/* 회원가입 카드 */}
-        <Card className="shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-semibold text-center">
-              회원가입
-            </CardTitle>
-            <CardDescription className="text-center">
-              ZipCheck 계정을 만들어 안전한 부동산 거래를 시작하세요
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* 전체 에러 메시지 */}
-            {errors.general && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-                {errors.general}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* 이름 입력 */}
-              <div className="space-y-2">
-                <Label htmlFor="name">이름</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="홍길동"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className={
-                    errors.name
-                      ? "border-red-500 focus-visible:ring-red-500"
-                      : ""
-                  }
-                  disabled={isLoading}
-                />
-                {errors.name && (
-                  <p className="text-sm text-red-600">{errors.name}</p>
-                )}
-              </div>
-
-              {/* 이메일 입력 */}
-              <div className="space-y-2">
-                <Label htmlFor="email">이메일</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className={
-                    errors.email
-                      ? "border-red-500 focus-visible:ring-red-500"
-                      : ""
-                  }
-                  disabled={isLoading}
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-600">{errors.email}</p>
-                )}
-              </div>
-
-              {/* 전화번호 입력 */}
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber">전화번호</Label>
-                <Input
-                  id="phoneNumber"
-                  name="phoneNumber"
-                  type="tel"
-                  placeholder="010-1234-5678"
-                  value={formData.phoneNumber}
-                  onChange={handleInputChange}
-                  className={
-                    errors.phoneNumber
-                      ? "border-red-500 focus-visible:ring-red-500"
-                      : ""
-                  }
-                  disabled={isLoading}
-                />
-                {errors.phoneNumber && (
-                  <p className="text-sm text-red-600">{errors.phoneNumber}</p>
-                )}
-              </div>
-
-              {/* 비밀번호 입력 */}
-              <div className="space-y-2">
-                <Label htmlFor="password">비밀번호</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className={
-                    errors.password
-                      ? "border-red-500 focus-visible:ring-red-500"
-                      : ""
-                  }
-                  disabled={isLoading}
-                />
-                {errors.password && (
-                  <p className="text-sm text-red-600">{errors.password}</p>
-                )}
-                <p className="text-xs text-gray-500">
-                  8자리 이상, 영문과 숫자 포함
-                </p>
-              </div>
-
-              {/* 비밀번호 확인 입력 */}
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">비밀번호 확인</Label>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  className={
-                    errors.confirmPassword
-                      ? "border-red-500 focus-visible:ring-red-500"
-                      : ""
-                  }
-                  disabled={isLoading}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-red-600">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-
-              {/* 회원가입 버튼 */}
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* 이름 입력 */}
+            <div className="space-y-2">
+              <Label htmlFor="name">이름</Label>
+              <Input
+                id="name"
+                name="name"
+                type="text"
+                placeholder="홍길동"
+                value={formData.name}
+                onChange={handleInputChange}
+                className={
+                  errors.name ? "border-red-500 focus-visible:ring-red-500" : ""
+                }
                 disabled={isLoading}
-              >
-                {isLoading ? "회원가입 중..." : "회원가입"}
-              </Button>
-            </form>
-
-            {/* 구분선 */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">또는</span>
-              </div>
+              />
+              {errors.name && (
+                <p className="text-sm text-red-600">{errors.name}</p>
+              )}
             </div>
 
-            {/* 로그인 링크 */}
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                이미 계정이 있으신가요?{" "}
-                <Link
-                  to="/login"
-                  className="font-medium text-primary hover:underline"
-                >
-                  로그인
-                </Link>
+            {/* 이메일 입력 */}
+            <div className="space-y-2">
+              <Label htmlFor="email">이메일</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={
+                  errors.email
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : ""
+                }
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email}</p>
+              )}
+            </div>
+
+            {/* 전화번호 입력 */}
+            <div className="space-y-2">
+              <Label htmlFor="phoneNumber">전화번호</Label>
+              <Input
+                id="phoneNumber"
+                name="phoneNumber"
+                type="tel"
+                placeholder="010-1234-5678"
+                value={formData.phoneNumber}
+                onChange={handleInputChange}
+                className={
+                  errors.phoneNumber
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : ""
+                }
+                disabled={isLoading}
+              />
+              {errors.phoneNumber && (
+                <p className="text-sm text-red-600">{errors.phoneNumber}</p>
+              )}
+            </div>
+
+            {/* 비밀번호 입력 */}
+            <div className="space-y-2">
+              <Label htmlFor="password">비밀번호</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={
+                  errors.password
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : ""
+                }
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-600">{errors.password}</p>
+              )}
+              <p className="text-xs text-gray-500">
+                8자리 이상, 영문과 숫자 포함
               </p>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* 푸터 */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-gray-500">
-            © 2024 ZipCheck. 모든 권리 보유.
-          </p>
-        </div>
-      </div>
+            {/* 비밀번호 확인 입력 */}
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">비밀번호 확인</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                className={
+                  errors.confirmPassword
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : ""
+                }
+                disabled={isLoading}
+              />
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-600">{errors.confirmPassword}</p>
+              )}
+            </div>
+
+            {/* 회원가입 버튼 */}
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={isLoading}
+            >
+              {isLoading ? "회원가입 중..." : "회원가입"}
+            </Button>
+          </form>
+
+          {/* 구분선 */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">또는</span>
+            </div>
+          </div>
+
+          {/* 로그인 링크 */}
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              이미 계정이 있으신가요?{" "}
+              <Link
+                to="/login"
+                className="font-medium text-primary hover:underline"
+              >
+                로그인
+              </Link>
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

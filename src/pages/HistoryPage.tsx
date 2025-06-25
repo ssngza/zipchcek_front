@@ -7,7 +7,6 @@ import HistoryFilters, {
 } from "@/components/HistoryFilters";
 import HistoryPagination from "@/components/HistoryPagination";
 import HistorySearch from "@/components/HistorySearch";
-import { Navbar } from "@/components/Navbar";
 import { Box, Container, Flex, Heading, Text } from "@/components/ui/base";
 import {
   AlertTriangle,
@@ -346,8 +345,7 @@ const HistoryPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100">
-      <Navbar />
+    <div className="min-h-screen bg-background">
       <Container className="py-4 sm:py-8 px-4 sm:px-6">
         <Heading
           level={1}

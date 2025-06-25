@@ -94,7 +94,7 @@ const HistoryCard: React.FC<HistoryCardProps> = ({
   return (
     <>
       <Card
-        className="hover:shadow-md transition-shadow cursor-pointer relative"
+        className="hover:shadow-md transition-shadow cursor-pointer relative w-full"
         onClick={handleClick}
       >
         {/* 삭제 버튼 */}
@@ -107,7 +107,7 @@ const HistoryCard: React.FC<HistoryCardProps> = ({
           <Trash2 size={16} />
         </Button>
 
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 pt-3">
           <div className="flex justify-between items-start flex-wrap gap-2 sm:flex-nowrap">
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <FileText size={18} className="text-gray-500 flex-shrink-0" />

@@ -9,7 +9,7 @@ import React from "react";
 
 const HistoryCardSkeleton: React.FC = () => {
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="hover:shadow-md transition-shadow w-full">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2">

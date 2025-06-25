@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, FileText, Home, Printer } from "lucide-react";
+import { ArrowLeft, FileText, Printer } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -298,15 +298,9 @@ export default function ResultPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div className="flex items-center space-x-2 mb-4 sm:mb-0">
           <Button variant="outline" size="sm" asChild>
-            <Link to="/">
+            <Link to="/history">
               <ArrowLeft className="h-4 w-4 mr-1" />
               <span>돌아가기</span>
-            </Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/">
-              <Home className="h-4 w-4 mr-1" />
-              <span>홈</span>
             </Link>
           </Button>
         </div>

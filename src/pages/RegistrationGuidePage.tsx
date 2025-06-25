@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import RegistrationGuideContent from "@/components/RegistrationGuideContent";
 import RegistrationGuideFAQ from "@/components/RegistrationGuideFAQ";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,7 +16,6 @@ export default function RegistrationGuidePage() {
       </Helmet>
 
       <div className="min-h-screen bg-background">
-        <Navbar />
         <main className="container mx-auto px-4 py-6">
           <div className="space-y-6 max-w-5xl mx-auto">
             <div className="text-center mb-8">

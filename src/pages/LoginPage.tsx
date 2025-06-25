@@ -107,137 +107,117 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* 로고 섹션 */}
-        <div className="text-center mb-8">
-          <Link
-            to="/"
-            className="inline-block hover:opacity-80 transition-opacity"
-          >
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">ZipCheck</h1>
-            <p className="text-gray-600">안전한 부동산 거래의 시작</p>
-          </Link>
-        </div>
+    <div className="w-full max-w-md">
+      {/* 로그인 카드 */}
+      <Card className="shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-semibold text-center">
+            로그인
+          </CardTitle>
+          <CardDescription className="text-center">
+            계정에 로그인하여 ZipCheck 서비스를 이용하세요
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* 전체 에러 메시지 */}
+          {errors.general && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+              {errors.general}
+            </div>
+          )}
 
-        {/* 로그인 카드 */}
-        <Card className="shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-semibold text-center">
-              로그인
-            </CardTitle>
-            <CardDescription className="text-center">
-              계정에 로그인하여 ZipCheck 서비스를 이용하세요
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* 전체 에러 메시지 */}
-            {errors.general && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
-                {errors.general}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* 이메일 입력 */}
-              <div className="space-y-2">
-                <Label htmlFor="email">이메일</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="test@example.com"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className={
-                    errors.email
-                      ? "border-red-500 focus-visible:ring-red-500"
-                      : ""
-                  }
-                  disabled={isLoading}
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-600">{errors.email}</p>
-                )}
-                <p className="text-xs text-gray-500">
-                  데모용: test@example.com 사용
-                </p>
-              </div>
-
-              {/* 비밀번호 입력 */}
-              <div className="space-y-2">
-                <Label htmlFor="password">비밀번호</Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className={
-                    errors.password
-                      ? "border-red-500 focus-visible:ring-red-500"
-                      : ""
-                  }
-                  disabled={isLoading}
-                />
-                {errors.password && (
-                  <p className="text-sm text-red-600">{errors.password}</p>
-                )}
-                <p className="text-xs text-gray-500">데모용: 123456 사용</p>
-              </div>
-
-              {/* 로그인 버튼 */}
-              <Button
-                type="submit"
-                className="w-full"
-                size="lg"
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* 이메일 입력 */}
+            <div className="space-y-2">
+              <Label htmlFor="email">이메일</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="test@example.com"
+                value={formData.email}
+                onChange={handleInputChange}
+                className={
+                  errors.email
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : ""
+                }
                 disabled={isLoading}
-              >
-                {isLoading ? "로그인 중..." : "로그인"}
-              </Button>
-            </form>
-
-            {/* 구분선 */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">또는</span>
-              </div>
-            </div>
-
-            {/* 회원가입 링크 */}
-            <div className="text-center space-y-2">
-              <p className="text-sm text-gray-600">
-                아직 계정이 없으신가요?{" "}
-                <Link
-                  to="/signup"
-                  className="font-medium text-primary hover:underline"
-                >
-                  회원가입
-                </Link>
+              />
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email}</p>
+              )}
+              <p className="text-xs text-gray-500">
+                데모용: test@example.com 사용
               </p>
-
-              {/* 비밀번호 찾기 링크 */}
-              <Link
-                to="/forgot-password"
-                className="text-sm text-gray-500 hover:text-primary hover:underline block"
-              >
-                비밀번호를 잊으셨나요?
-              </Link>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* 푸터 */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-gray-500">
-            © 2024 ZipCheck. 모든 권리 보유.
-          </p>
-        </div>
-      </div>
+            {/* 비밀번호 입력 */}
+            <div className="space-y-2">
+              <Label htmlFor="password">비밀번호</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleInputChange}
+                className={
+                  errors.password
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : ""
+                }
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-600">{errors.password}</p>
+              )}
+              <p className="text-xs text-gray-500">데모용: 123456 사용</p>
+            </div>
+
+            {/* 로그인 버튼 */}
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={isLoading}
+            >
+              {isLoading ? "로그인 중..." : "로그인"}
+            </Button>
+          </form>
+
+          {/* 구분선 */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">또는</span>
+            </div>
+          </div>
+
+          {/* 회원가입 링크 */}
+          <div className="text-center space-y-2">
+            <p className="text-sm text-gray-600">
+              아직 계정이 없으신가요?{" "}
+              <Link
+                to="/signup"
+                className="font-medium text-primary hover:underline"
+              >
+                회원가입
+              </Link>
+            </p>
+
+            {/* 비밀번호 찾기 링크 */}
+            <Link
+              to="/forgot-password"
+              className="text-sm text-gray-500 hover:text-primary hover:underline block"
+            >
+              비밀번호를 잊으셨나요?
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
