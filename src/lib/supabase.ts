@@ -41,7 +41,7 @@ export const handleNaverCallback = async (code: string, state: string) => {
     // 백엔드 API를 통해 네이버 토큰을 처리해야 합니다.
     // 여기서는 임시 구현으로 대체합니다.
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "naver",
+      provider: "kakao",
       options: {
         queryParams: {
           code,
