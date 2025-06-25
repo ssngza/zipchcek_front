@@ -19,13 +19,6 @@ export interface ChecklistItem {
   description: string;
   importance: "high" | "medium" | "low"; // 중요도
 }
-
-// 체크리스트 항목 상태 인터페이스
-interface ChecklistItemState {
-  id: string;
-  checked: boolean;
-}
-
 interface FraudPreventionChecklistProps {
   propertyId?: string; // 부동산 ID (로컬 스토리지 저장용)
   items: ChecklistItem[]; // 체크리스트 항목
