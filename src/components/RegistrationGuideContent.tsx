@@ -7,9 +7,186 @@ import {
   CreditCard,
   ExternalLink,
   FileText,
+  Info,
   Printer,
   Smartphone,
 } from "lucide-react";
+
+// 인포그래픽 컴포넌트
+const StepInfoGraphic = () => {
+  return (
+    <div className="my-8 p-4 bg-muted/30 rounded-lg">
+      <h3 className="text-lg font-medium mb-4 flex items-center">
+        <Info className="mr-2 h-5 w-5 text-primary" />
+        등기부등본 발급 절차 요약
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* 온라인 발급 */}
+        <div className="bg-card border rounded-lg p-4">
+          <h4 className="font-medium text-center mb-2">온라인 발급</h4>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                1
+              </div>
+              <span className="text-sm">인터넷 등기소 접속</span>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                2
+              </div>
+              <span className="text-sm">부동산 주소 입력</span>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                3
+              </div>
+              <span className="text-sm">본인 인증</span>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                4
+              </div>
+              <span className="text-sm">수수료 결제 (700원)</span>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                5
+              </div>
+              <span className="text-sm">PDF 다운로드</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 오프라인 발급 */}
+        <div className="bg-card border rounded-lg p-4">
+          <h4 className="font-medium text-center mb-2">오프라인 발급</h4>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                1
+              </div>
+              <span className="text-sm">등기소/주민센터 방문</span>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                2
+              </div>
+              <span className="text-sm">신청서 작성</span>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                3
+              </div>
+              <span className="text-sm">신분증 제시</span>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                4
+              </div>
+              <span className="text-sm">수수료 납부 (1,000원)</span>
+            </div>
+            <div className="flex items-center">
+              <div className="bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium text-primary mr-2">
+                5
+              </div>
+              <span className="text-sm">등기부등본 수령</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 준비물 */}
+        <div className="bg-card border rounded-lg p-4">
+          <h4 className="font-medium text-center mb-2">필요한 준비물</h4>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <Check className="h-4 w-4 text-green-500 mr-2" />
+              <span className="text-sm">부동산 소재지 주소</span>
+            </div>
+            <div className="flex items-center">
+              <Check className="h-4 w-4 text-green-500 mr-2" />
+              <span className="text-sm">본인 인증 수단</span>
+            </div>
+            <div className="flex items-center">
+              <Check className="h-4 w-4 text-green-500 mr-2" />
+              <span className="text-sm">결제 수단</span>
+            </div>
+            <div className="flex items-center">
+              <Check className="h-4 w-4 text-green-500 mr-2" />
+              <span className="text-sm">오프라인: 신분증</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 인터넷 등기소 스크린샷 컴포넌트
+const RegistrationScreenshot = () => {
+  return (
+    <div className="my-6 border rounded-lg overflow-hidden">
+      <div className="bg-muted/50 p-2 border-b">
+        <div className="flex items-center">
+          <div className="flex space-x-1.5">
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+          </div>
+          <div className="mx-auto text-xs text-muted-foreground">
+            인터넷 등기소 화면 예시
+          </div>
+        </div>
+      </div>
+      <div className="bg-white p-4 flex flex-col items-center">
+        <div className="w-full max-w-md mx-auto">
+          <div className="border-b pb-4 mb-4">
+            <div className="text-lg font-bold text-center text-blue-800 mb-2">
+              대한민국 법원 인터넷등기소
+            </div>
+            <div className="flex justify-center space-x-4 text-sm">
+              <span className="text-blue-700">부동산등기</span>
+              <span>법인등기</span>
+              <span>공유마당</span>
+              <span>고객센터</span>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <div className="text-center font-medium mb-4">부동산등기 발급</div>
+            <div className="border rounded p-3 mb-3">
+              <div className="text-sm mb-2 font-medium">
+                부동산 소재지 주소 입력
+              </div>
+              <div className="flex">
+                <div className="bg-gray-100 border flex-grow p-2 text-sm text-gray-500">
+                  서울특별시 강남구 테헤란로...
+                </div>
+                <button className="bg-blue-700 text-white text-sm px-3">
+                  검색
+                </button>
+              </div>
+            </div>
+
+            <div className="border rounded p-3">
+              <div className="text-sm mb-2 font-medium">부동산 선택</div>
+              <div className="border-b pb-2 mb-2 text-sm">
+                서울특별시 강남구 테헤란로 123
+              </div>
+              <button className="bg-blue-700 text-white w-full py-1.5 text-sm">
+                발급하기
+              </button>
+            </div>
+          </div>
+
+          <div className="text-xs text-muted-foreground text-center">
+            * 실제 인터넷 등기소 화면은 다를 수 있습니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function RegistrationGuideContent() {
   // 인쇄 기능
@@ -50,6 +227,9 @@ export default function RegistrationGuideContent() {
         </div>
       </section>
 
+      {/* 인포그래픽 추가 */}
+      <StepInfoGraphic />
+
       <Separator />
 
       {/* 온라인 발급 방법 */}
@@ -62,6 +242,9 @@ export default function RegistrationGuideContent() {
           인터넷 등기소를 통해 언제 어디서나 편리하게 등기부등본을 발급받을 수
           있습니다.
         </p>
+
+        {/* 인터넷 등기소 스크린샷 */}
+        <RegistrationScreenshot />
 
         <div className="grid gap-4">
           <div className="bg-card border rounded-lg p-4">
