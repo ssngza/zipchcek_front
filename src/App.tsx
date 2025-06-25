@@ -6,6 +6,7 @@ import HistoryPage from "./pages/HistoryPage";
 import HomePage from "./pages/HomePage";
 import LoadingPage from "./pages/LoadingPage";
 import LoginPage from "./pages/LoginPage";
+import RegistrationGuidePage from "./pages/RegistrationGuidePage";
 import ResultPage from "./pages/ResultPage";
 import SignupPage from "./pages/SignupPage";
 import UploadPage from "./pages/UploadPage";
@@ -22,6 +23,10 @@ function App() {
           <Route path="/loading" element={<LoadingPage />} />
           <Route path="/result" element={<ResultPage />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route
+            path="/registration-guide"
+            element={<RegistrationGuidePage />}
+          />
           <Route
             path="/dictionary"
             element={
