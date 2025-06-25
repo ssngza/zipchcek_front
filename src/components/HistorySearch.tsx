@@ -12,7 +12,7 @@ const HistorySearch: React.FC<HistorySearchProps> = ({
   onSearch,
   initialQuery = "",
 }) => {
-  const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,29 +25,33 @@ const HistorySearch: React.FC<HistorySearchProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full max-w-md">
+    <form onSubmit={handleSubmit} className="w-full">
       <div className="relative flex items-center">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <div className="absolute left-3 text-gray-400">
+          <Search size={18} />
+        </div>
         <Input
           type="text"
-          placeholder="파일명 또는 주소로 검색..."
+          placeholder="파일명으로 검색..."
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
-          className="pl-10 pr-12"
+          className="pl-10 pr-16 py-6 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-transparent"
         />
         {searchQuery && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-[70px] text-gray-400 hover:text-gray-600"
+            aria-label="검색어 지우기"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         )}
         <Button
           type="submit"
+          variant="default"
           size="sm"
-          className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7"
+          className="absolute right-2 px-3"
         >
           검색
         </Button>

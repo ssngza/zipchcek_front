@@ -5,13 +5,11 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   AlertTriangle,
   Calendar,
   ChevronRight,
-  Clock,
   FileText,
   Trash2,
 } from "lucide-react";
@@ -26,7 +24,7 @@ export interface HistoryCardProps {
   riskScore: number;
   issueCount: number;
   onClick?: () => void;
-  onDelete?: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 const HistoryCard: React.FC<HistoryCardProps> = ({
@@ -65,19 +63,11 @@ const HistoryCard: React.FC<HistoryCardProps> = ({
   // 위험도에 따른 색상 및 레이블 설정
   const getRiskBadge = () => {
     if (riskScore >= 70) {
-      return <Badge variant="destructive">위험 {riskScore}%</Badge>;
+      return { color: "destructive", text: "고위험" };
     } else if (riskScore >= 30) {
-      return (
-        <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-          주의 {riskScore}%
-        </Badge>
-      );
+      return { color: "secondary", text: "중위험" };
     } else {
-      return (
-        <Badge variant="outline" className="bg-green-100 text-green-800">
-          안전 {riskScore}%
-        </Badge>
-      );
+      return { color: "outline", text: "저위험" };
     }
   };
 
@@ -88,6 +78,19 @@ const HistoryCard: React.FC<HistoryCardProps> = ({
     day: "numeric",
   });
 
+  const { color: riskColor, text: riskText } = getRiskBadge();
+
+  // 위험도에 따른 배지 스타일 클래스
+  const getBadgeClass = () => {
+    if (riskScore >= 70) {
+      return "";
+    } else if (riskScore >= 30) {
+      return "bg-amber-100 text-amber-800 hover:bg-amber-100";
+    } else {
+      return "bg-green-100 text-green-800 hover:bg-green-100";
+    }
+  };
+
   return (
     <>
       <Card
@@ -95,42 +98,55 @@ const HistoryCard: React.FC<HistoryCardProps> = ({
         onClick={handleClick}
       >
         {/* 삭제 버튼 */}
-        {onDelete && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50 z-10"
-            onClick={handleDeleteClick}
-          >
-            <Trash2 size={16} />
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-2 right-2 h-8 w-8 text-gray-400 hover:text-red-500 hover:bg-red-50 z-10"
+          onClick={handleDeleteClick}
+        >
+          <Trash2 size={16} />
+        </Button>
 
         <CardHeader className="pb-2">
-          <div className="flex justify-between items-start">
-            <CardTitle className="text-lg font-medium flex items-center gap-2">
-              <FileText size={18} className="text-primary" />
-              <span className="truncate max-w-[200px]">{fileName}</span>
-            </CardTitle>
-            {getRiskBadge()}
+          <div className="flex justify-between items-start flex-wrap gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <FileText size={18} className="text-gray-500 flex-shrink-0" />
+              <h3 className="font-medium text-sm sm:text-base line-clamp-1 break-all">
+                {fileName}
+              </h3>
+            </div>
+            <Badge
+              variant={riskColor as "destructive" | "secondary" | "outline"}
+              className={`ml-auto flex-shrink-0 whitespace-nowrap ${getBadgeClass()}`}
+            >
+              {riskText} ({riskScore}점)
+            </Badge>
           </div>
         </CardHeader>
         <CardContent className="pb-2">
-          <div className="flex items-center text-sm text-gray-500 mb-2">
-            <Calendar size={14} className="mr-1" />
-            <span>{formattedDate}</span>
+          <div className="flex items-center text-sm mb-2">
+            <Calendar size={14} className="mr-1 text-gray-500 flex-shrink-0" />
+            <span className="text-gray-600">분석일: {formattedDate}</span>
           </div>
-          {issueCount > 0 && (
-            <div className="flex items-center text-sm text-amber-600">
-              <AlertTriangle size={14} className="mr-1" />
-              <span>잠재적 이슈 {issueCount}개 발견</span>
-            </div>
-          )}
+          <div className="flex items-center text-sm">
+            <AlertTriangle
+              size={14}
+              className={`mr-1 flex-shrink-0 ${
+                issueCount > 0 ? "text-amber-500" : "text-gray-500"
+              }`}
+            />
+            <span className="text-gray-600">
+              {issueCount > 0
+                ? `잠재적 이슈 ${issueCount}건 발견`
+                : "잠재적 이슈 없음"}
+            </span>
+          </div>
         </CardContent>
         <CardFooter className="pt-0 flex justify-between items-center">
-          <div className="flex items-center text-xs text-gray-400">
-            <Clock size={12} className="mr-1" />
-            <span>분석 ID: {id.slice(0, 8)}</span>
+          <div className="flex items-center">
+            <span className="text-xs text-gray-500">
+              ID: {id.slice(0, 8)}...
+            </span>
           </div>
           <Button variant="ghost" size="sm" className="p-0 h-auto">
             <ChevronRight size={16} />

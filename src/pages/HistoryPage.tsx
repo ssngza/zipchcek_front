@@ -99,7 +99,10 @@ const initialMockData = [
 // 빈 상태 테스트를 위한 빈 배열
 // const initialMockData = [];
 
-const ITEMS_PER_PAGE = 4; // 페이지당 표시할 항목 수
+// 모바일 환경에서는 페이지당 항목 수를 줄임
+const getItemsPerPage = () => {
+  return window.innerWidth < 640 ? 3 : 4;
+};
 
 const HistoryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -110,6 +113,19 @@ const HistoryPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
+
+  // 화면 크기 변경 감지하여 페이지당 항목 수 조정
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerPage(getItemsPerPage());
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   // 데이터 로딩 시뮬레이션
   useEffect(() => {
@@ -214,14 +230,14 @@ const HistoryPage: React.FC = () => {
 
   // 페이지네이션 데이터
   const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredAndSortedData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [filteredAndSortedData, currentPage]);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedData.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAndSortedData, currentPage, itemsPerPage]);
 
   // 총 페이지 수 계산
   const totalPages = useMemo(() => {
-    return Math.ceil(filteredAndSortedData.length / ITEMS_PER_PAGE);
-  }, [filteredAndSortedData]);
+    return Math.ceil(filteredAndSortedData.length / itemsPerPage);
+  }, [filteredAndSortedData, itemsPerPage]);
 
   // 필터 및 검색 초기화
   const handleResetFilters = () => {
@@ -260,7 +276,7 @@ const HistoryPage: React.FC = () => {
 
   // 스켈레톤 로더 렌더링
   const renderSkeletons = () => {
-    return Array(ITEMS_PER_PAGE)
+    return Array(itemsPerPage)
       .fill(0)
       .map((_, index) => <HistoryCardSkeleton key={index} />);
   };
@@ -332,11 +348,14 @@ const HistoryPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100">
       <Navbar />
-      <Container className="py-8">
-        <Heading level={1} className="text-3xl font-bold mb-6">
+      <Container className="py-4 sm:py-8 px-4 sm:px-6">
+        <Heading
+          level={1}
+          className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6"
+        >
           분석 기록
         </Heading>
-        <Text className="text-gray-600 mb-8">
+        <Text className="text-gray-600 mb-6 sm:mb-8 text-sm sm:text-base">
           이전에 분석한 등기부등본 목록입니다. 클릭하여 분석 결과를 다시 확인할
           수 있습니다.
         </Text>
@@ -350,7 +369,7 @@ const HistoryPage: React.FC = () => {
 
         {/* 필터링 및 정렬 영역 - 데이터가 있을 때만 표시 */}
         {!isLoading && historyData.length > 0 && (
-          <Box className="mb-8 p-4 bg-white rounded-lg shadow-sm">
+          <Box className="mb-6 sm:mb-8 p-3 sm:p-4 bg-white rounded-lg shadow-sm">
             <HistoryFilters
               sortBy={sortBy}
               filterBy={filterBy}
@@ -388,8 +407,8 @@ const HistoryPage: React.FC = () => {
         )}
 
         {/* 분석 기록 목록 영역 */}
-        <Box className="bg-white rounded-lg shadow-lg p-6">
-          <Flex direction="column" gap={4}>
+        <Box className="bg-white rounded-lg shadow-lg p-3 sm:p-6">
+          <Flex direction="column" gap={3} className="sm:gap-4">
             {isLoading
               ? // 초기 로딩 중
                 renderSkeletons()
@@ -416,7 +435,7 @@ const HistoryPage: React.FC = () => {
 
         {/* 페이지네이션 영역 - 로딩 중이 아니고 데이터가 있을 때만 표시 */}
         {!isLoading && historyData.length > 0 && (
-          <Flex justify="center" className="mt-8">
+          <Flex justify="center" className="mt-6 sm:mt-8">
             {isSearching ? (
               <div className="flex items-center text-sm text-gray-500">
                 <Loader2 size={16} className="animate-spin mr-2" />
@@ -436,21 +455,18 @@ const HistoryPage: React.FC = () => {
         {!isLoading && !isSearching && filteredAndSortedData.length > 0 && (
           <Text className="text-xs text-gray-500 text-center mt-2">
             총 {filteredAndSortedData.length}개 항목 중{" "}
-            {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
-            {Math.min(
-              currentPage * ITEMS_PER_PAGE,
-              filteredAndSortedData.length
-            )}
+            {(currentPage - 1) * itemsPerPage + 1}-
+            {Math.min(currentPage * itemsPerPage, filteredAndSortedData.length)}
             개 표시
           </Text>
         )}
 
         {/* 빈 상태일 때 하단 버튼 - 데이터가 없고 로딩 중이 아닐 때만 표시 */}
         {!isLoading && historyData.length === 0 && (
-          <Flex justify="center" className="mt-8">
+          <Flex justify="center" className="mt-6 sm:mt-8">
             <button
               onClick={handleStartNewAnalysis}
-              className="flex items-center gap-2 text-primary hover:underline"
+              className="flex items-center gap-2 text-primary hover:underline text-sm sm:text-base"
             >
               <Upload size={16} />새 분석 시작하기
             </button>
