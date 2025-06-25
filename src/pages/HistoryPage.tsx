@@ -1,4 +1,5 @@
 import HistoryCard from "@/components/HistoryCard";
+import HistoryCardSkeleton from "@/components/HistoryCardSkeleton";
 import HistoryFilters, {
   FilterOption,
   SortOption,
@@ -7,7 +8,8 @@ import HistoryPagination from "@/components/HistoryPagination";
 import HistorySearch from "@/components/HistorySearch";
 import { Navbar } from "@/components/Navbar";
 import { Box, Container, Flex, Heading, Text } from "@/components/ui/base";
-import React, { useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 // 임시 데이터 (상태로 관리하여 삭제 기능 구현)
@@ -88,11 +90,63 @@ const initialMockData = [
 const ITEMS_PER_PAGE = 4; // 페이지당 표시할 항목 수
 
 const HistoryPage: React.FC = () => {
-  const [historyData, setHistoryData] = useState(initialMockData);
+  const [historyData, setHistoryData] = useState<typeof initialMockData>([]);
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // 데이터 로딩 시뮬레이션
+  useEffect(() => {
+    // 초기 데이터 로딩
+    const loadInitialData = () => {
+      setIsLoading(true);
+      // 로딩 시간 시뮬레이션 (1-2초)
+      setTimeout(() => {
+        setHistoryData(initialMockData);
+        setIsLoading(false);
+      }, 1500);
+    };
+
+    loadInitialData();
+  }, []);
+
+  // 검색 시 로딩 시뮬레이션
+  const handleSearch = (query: string) => {
+    setIsSearching(true);
+    setSearchQuery(query);
+
+    // 검색 시간 시뮬레이션 (0.5-1초)
+    setTimeout(() => {
+      setIsSearching(false);
+      setCurrentPage(1); // 검색 시 첫 페이지로 이동
+    }, 800);
+  };
+
+  // 필터 변경 시 로딩 시뮬레이션
+  const handleFilterChange = (value: FilterOption) => {
+    setIsSearching(true);
+    setFilterBy(value);
+
+    // 필터링 시간 시뮬레이션 (0.3-0.7초)
+    setTimeout(() => {
+      setIsSearching(false);
+      setCurrentPage(1); // 필터 변경 시 첫 페이지로 이동
+    }, 500);
+  };
+
+  // 정렬 변경 시 로딩 시뮬레이션
+  const handleSortChange = (value: SortOption) => {
+    setIsSearching(true);
+    setSortBy(value);
+
+    // 정렬 시간 시뮬레이션 (0.3-0.5초)
+    setTimeout(() => {
+      setIsSearching(false);
+    }, 400);
+  };
 
   // 분석 기록 삭제 처리
   const handleDeleteHistory = (id: string) => {
@@ -158,20 +212,39 @@ const HistoryPage: React.FC = () => {
 
   // 필터 및 검색 초기화
   const handleResetFilters = () => {
+    setIsSearching(true);
     setSortBy("date-desc");
     setFilterBy("all");
     setSearchQuery("");
     setCurrentPage(1); // 필터 초기화 시 첫 페이지로 이동
+
+    // 초기화 시간 시뮬레이션 (0.3초)
+    setTimeout(() => {
+      setIsSearching(false);
+    }, 300);
   };
 
   // 페이지 변경 처리
   const handlePageChange = (page: number) => {
+    setIsSearching(true);
     setCurrentPage(page);
-    // 페이지 상단으로 스크롤
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+
+    // 페이지 변경 시간 시뮬레이션 (0.3초)
+    setTimeout(() => {
+      setIsSearching(false);
+      // 페이지 상단으로 스크롤
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 300);
+  };
+
+  // 스켈레톤 로더 렌더링
+  const renderSkeletons = () => {
+    return Array(ITEMS_PER_PAGE)
+      .fill(0)
+      .map((_, index) => <HistoryCardSkeleton key={index} />);
   };
 
   return (
@@ -188,7 +261,7 @@ const HistoryPage: React.FC = () => {
 
         {/* 검색 영역 */}
         <Box className="mb-4">
-          <HistorySearch onSearch={setSearchQuery} initialQuery={searchQuery} />
+          <HistorySearch onSearch={handleSearch} initialQuery={searchQuery} />
         </Box>
 
         {/* 필터링 및 정렬 영역 */}
@@ -196,24 +269,33 @@ const HistoryPage: React.FC = () => {
           <HistoryFilters
             sortBy={sortBy}
             filterBy={filterBy}
-            onSortChange={setSortBy}
-            onFilterChange={setFilterBy}
+            onSortChange={handleSortChange}
+            onFilterChange={handleFilterChange}
           />
         </Box>
 
-        {/* 검색 결과 요약 */}
-        {searchQuery && (
+        {/* 검색 결과 요약 - 로딩 중이 아닐 때만 표시 */}
+        {!isLoading && searchQuery && (
           <Box className="mb-4">
             <Text className="text-sm">
-              "{searchQuery}" 검색 결과: {filteredAndSortedData.length}개의 항목
-              찾음
-              {filteredAndSortedData.length === 0 && (
-                <button
-                  onClick={handleResetFilters}
-                  className="ml-2 text-primary hover:underline"
-                >
-                  필터 초기화
-                </button>
+              {isSearching ? (
+                <span className="flex items-center">
+                  <Loader2 size={14} className="animate-spin mr-1" />
+                  검색 중...
+                </span>
+              ) : (
+                <>
+                  "{searchQuery}" 검색 결과: {filteredAndSortedData.length}개의
+                  항목 찾음
+                  {filteredAndSortedData.length === 0 && (
+                    <button
+                      onClick={handleResetFilters}
+                      className="ml-2 text-primary hover:underline"
+                    >
+                      필터 초기화
+                    </button>
+                  )}
+                </>
               )}
             </Text>
           </Box>
@@ -222,7 +304,14 @@ const HistoryPage: React.FC = () => {
         {/* 분석 기록 목록 영역 */}
         <Box className="bg-white rounded-lg shadow-lg p-6">
           <Flex direction="column" gap={4}>
-            {paginatedData.length > 0 ? (
+            {isLoading ? (
+              // 초기 로딩 중
+              renderSkeletons()
+            ) : isSearching ? (
+              // 검색, 필터링, 정렬 중
+              renderSkeletons()
+            ) : paginatedData.length > 0 ? (
+              // 데이터 있음
               paginatedData.map(item => (
                 <HistoryCard
                   key={item.id}
@@ -235,6 +324,7 @@ const HistoryPage: React.FC = () => {
                 />
               ))
             ) : (
+              // 데이터 없음
               <Box className="p-8 text-center">
                 <Text className="text-gray-500">
                   {searchQuery
@@ -256,21 +346,30 @@ const HistoryPage: React.FC = () => {
           </Flex>
         </Box>
 
-        {/* 페이지네이션 영역 */}
-        <Flex justify="center" className="mt-8">
-          {filteredAndSortedData.length > 0 ? (
-            <HistoryPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          ) : (
-            <Text className="text-sm text-gray-500">검색 결과가 없습니다</Text>
-          )}
-        </Flex>
+        {/* 페이지네이션 영역 - 로딩 중이 아닐 때만 표시 */}
+        {!isLoading && (
+          <Flex justify="center" className="mt-8">
+            {isSearching ? (
+              <div className="flex items-center text-sm text-gray-500">
+                <Loader2 size={16} className="animate-spin mr-2" />
+                로딩 중...
+              </div>
+            ) : filteredAndSortedData.length > 0 ? (
+              <HistoryPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            ) : (
+              <Text className="text-sm text-gray-500">
+                검색 결과가 없습니다
+              </Text>
+            )}
+          </Flex>
+        )}
 
-        {/* 페이지 정보 표시 */}
-        {filteredAndSortedData.length > 0 && (
+        {/* 페이지 정보 표시 - 로딩 중이 아니고 데이터가 있을 때만 표시 */}
+        {!isLoading && !isSearching && filteredAndSortedData.length > 0 && (
           <Text className="text-xs text-gray-500 text-center mt-2">
             총 {filteredAndSortedData.length}개 항목 중{" "}
             {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
