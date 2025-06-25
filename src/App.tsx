@@ -1,5 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
+import NaverCallback from "./components/auth/NaverCallback";
 import AuthLayout from "./components/AuthLayout";
 import Layout from "./components/Layout";
 import TermDictionary from "./components/TermDictionary";
@@ -34,6 +35,9 @@ function App() {
             </AuthLayout>
           }
         />
+
+        {/* 네이버 로그인 콜백 처리 */}
+        <Route path="/auth/callback/naver" element={<NaverCallback />} />
 
         {/* 레이아웃이 적용된 페이지 */}
         <Route

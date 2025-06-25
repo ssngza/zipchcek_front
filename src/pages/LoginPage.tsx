@@ -1,3 +1,4 @@
+import NaverLoginButton from "@/components/auth/NaverLoginButton";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -194,6 +195,11 @@ export default function LoginPage() {
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-card px-2 text-muted-foreground">또는</span>
             </div>
+          </div>
+
+          {/* 소셜 로그인 버튼 */}
+          <div className="space-y-3">
+            <NaverLoginButton />
           </div>
 
           {/* 회원가입 링크 */}
