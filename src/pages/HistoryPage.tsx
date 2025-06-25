@@ -1,3 +1,4 @@
+import EmptyState from "@/components/EmptyState";
 import HistoryCard from "@/components/HistoryCard";
 import HistoryCardSkeleton from "@/components/HistoryCardSkeleton";
 import HistoryFilters, {
@@ -8,8 +9,16 @@ import HistoryPagination from "@/components/HistoryPagination";
 import HistorySearch from "@/components/HistorySearch";
 import { Navbar } from "@/components/Navbar";
 import { Box, Container, Flex, Heading, Text } from "@/components/ui/base";
-import { Loader2 } from "lucide-react";
+import {
+  AlertTriangle,
+  FileX,
+  Loader2,
+  RefreshCw,
+  Search,
+  Upload,
+} from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 // 임시 데이터 (상태로 관리하여 삭제 기능 구현)
@@ -87,9 +96,13 @@ const initialMockData = [
   },
 ];
 
+// 빈 상태 테스트를 위한 빈 배열
+// const initialMockData = [];
+
 const ITEMS_PER_PAGE = 4; // 페이지당 표시할 항목 수
 
 const HistoryPage: React.FC = () => {
+  const navigate = useNavigate();
   const [historyData, setHistoryData] = useState<typeof initialMockData>([]);
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
@@ -240,11 +253,80 @@ const HistoryPage: React.FC = () => {
     }, 300);
   };
 
+  // 새로운 분석 시작 처리
+  const handleStartNewAnalysis = () => {
+    navigate("/upload");
+  };
+
   // 스켈레톤 로더 렌더링
   const renderSkeletons = () => {
     return Array(ITEMS_PER_PAGE)
       .fill(0)
       .map((_, index) => <HistoryCardSkeleton key={index} />);
+  };
+
+  // 빈 상태 렌더링 - 상황에 맞는 EmptyState 컴포넌트 반환
+  const renderEmptyState = () => {
+    // 1. 초기 데이터가 없는 경우 (첫 사용자)
+    if (historyData.length === 0) {
+      return (
+        <EmptyState
+          icon={FileX}
+          title="분석 기록이 없습니다"
+          description="등기부등본을 분석하여 첫 번째 기록을 만들어보세요."
+          actionLabel="새 분석 시작하기"
+          onAction={handleStartNewAnalysis}
+        />
+      );
+    }
+
+    // 2. 검색 결과가 없는 경우
+    if (searchQuery) {
+      return (
+        <EmptyState
+          icon={Search}
+          title={`"${searchQuery}"에 대한 검색 결과가 없습니다`}
+          description="다른 검색어를 시도하거나 필터를 초기화해보세요."
+          actionLabel="필터 초기화"
+          onAction={handleResetFilters}
+        />
+      );
+    }
+
+    // 3. 필터 결과가 없는 경우
+    if (filterBy !== "all") {
+      let filterDescription = "";
+      let filterIcon = AlertTriangle;
+
+      if (filterBy === "high-risk") {
+        filterDescription = "고위험 등급의 분석 기록이 없습니다.";
+      } else if (filterBy === "medium-risk") {
+        filterDescription = "중위험 등급의 분석 기록이 없습니다.";
+      } else if (filterBy === "low-risk") {
+        filterDescription = "저위험 등급의 분석 기록이 없습니다.";
+      }
+
+      return (
+        <EmptyState
+          icon={filterIcon}
+          title="필터 조건에 맞는 결과가 없습니다"
+          description={filterDescription}
+          actionLabel="필터 초기화"
+          onAction={handleResetFilters}
+        />
+      );
+    }
+
+    // 4. 기본 빈 상태 (발생하지 않아야 함)
+    return (
+      <EmptyState
+        icon={RefreshCw}
+        title="표시할 데이터가 없습니다"
+        description="새로고침하거나 다시 시도해주세요."
+        actionLabel="새로고침"
+        onAction={() => window.location.reload()}
+      />
+    );
   };
 
   return (
@@ -259,23 +341,27 @@ const HistoryPage: React.FC = () => {
           수 있습니다.
         </Text>
 
-        {/* 검색 영역 */}
-        <Box className="mb-4">
-          <HistorySearch onSearch={handleSearch} initialQuery={searchQuery} />
-        </Box>
+        {/* 검색 영역 - 데이터가 있을 때만 표시 */}
+        {!isLoading && historyData.length > 0 && (
+          <Box className="mb-4">
+            <HistorySearch onSearch={handleSearch} initialQuery={searchQuery} />
+          </Box>
+        )}
 
-        {/* 필터링 및 정렬 영역 */}
-        <Box className="mb-8 p-4 bg-white rounded-lg shadow-sm">
-          <HistoryFilters
-            sortBy={sortBy}
-            filterBy={filterBy}
-            onSortChange={handleSortChange}
-            onFilterChange={handleFilterChange}
-          />
-        </Box>
+        {/* 필터링 및 정렬 영역 - 데이터가 있을 때만 표시 */}
+        {!isLoading && historyData.length > 0 && (
+          <Box className="mb-8 p-4 bg-white rounded-lg shadow-sm">
+            <HistoryFilters
+              sortBy={sortBy}
+              filterBy={filterBy}
+              onSortChange={handleSortChange}
+              onFilterChange={handleFilterChange}
+            />
+          </Box>
+        )}
 
-        {/* 검색 결과 요약 - 로딩 중이 아닐 때만 표시 */}
-        {!isLoading && searchQuery && (
+        {/* 검색 결과 요약 - 로딩 중이 아니고 검색어가 있을 때만 표시 */}
+        {!isLoading && searchQuery && historyData.length > 0 && (
           <Box className="mb-4">
             <Text className="text-sm">
               {isSearching ? (
@@ -304,50 +390,32 @@ const HistoryPage: React.FC = () => {
         {/* 분석 기록 목록 영역 */}
         <Box className="bg-white rounded-lg shadow-lg p-6">
           <Flex direction="column" gap={4}>
-            {isLoading ? (
-              // 초기 로딩 중
-              renderSkeletons()
-            ) : isSearching ? (
-              // 검색, 필터링, 정렬 중
-              renderSkeletons()
-            ) : paginatedData.length > 0 ? (
-              // 데이터 있음
-              paginatedData.map(item => (
-                <HistoryCard
-                  key={item.id}
-                  id={item.id}
-                  fileName={item.fileName}
-                  analysisDate={item.analysisDate}
-                  riskScore={item.riskScore}
-                  issueCount={item.issueCount}
-                  onDelete={handleDeleteHistory}
-                />
-              ))
-            ) : (
-              // 데이터 없음
-              <Box className="p-8 text-center">
-                <Text className="text-gray-500">
-                  {searchQuery
-                    ? `"${searchQuery}"에 대한 검색 결과가 없습니다.`
-                    : filterBy !== "all"
-                      ? "해당 필터 조건에 맞는 분석 기록이 없습니다."
-                      : "분석 기록이 없습니다."}
-                </Text>
-                {(searchQuery || filterBy !== "all") && (
-                  <button
-                    onClick={handleResetFilters}
-                    className="mt-2 text-primary hover:underline"
-                  >
-                    필터 초기화
-                  </button>
-                )}
-              </Box>
-            )}
+            {isLoading
+              ? // 초기 로딩 중
+                renderSkeletons()
+              : isSearching
+                ? // 검색, 필터링, 정렬 중
+                  renderSkeletons()
+                : paginatedData.length > 0
+                  ? // 데이터 있음
+                    paginatedData.map(item => (
+                      <HistoryCard
+                        key={item.id}
+                        id={item.id}
+                        fileName={item.fileName}
+                        analysisDate={item.analysisDate}
+                        riskScore={item.riskScore}
+                        issueCount={item.issueCount}
+                        onDelete={handleDeleteHistory}
+                      />
+                    ))
+                  : // 데이터 없음 - 상황별 빈 상태 UI
+                    renderEmptyState()}
           </Flex>
         </Box>
 
-        {/* 페이지네이션 영역 - 로딩 중이 아닐 때만 표시 */}
-        {!isLoading && (
+        {/* 페이지네이션 영역 - 로딩 중이 아니고 데이터가 있을 때만 표시 */}
+        {!isLoading && historyData.length > 0 && (
           <Flex justify="center" className="mt-8">
             {isSearching ? (
               <div className="flex items-center text-sm text-gray-500">
@@ -360,11 +428,7 @@ const HistoryPage: React.FC = () => {
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
               />
-            ) : (
-              <Text className="text-sm text-gray-500">
-                검색 결과가 없습니다
-              </Text>
-            )}
+            ) : null}
           </Flex>
         )}
 
@@ -379,6 +443,18 @@ const HistoryPage: React.FC = () => {
             )}
             개 표시
           </Text>
+        )}
+
+        {/* 빈 상태일 때 하단 버튼 - 데이터가 없고 로딩 중이 아닐 때만 표시 */}
+        {!isLoading && historyData.length === 0 && (
+          <Flex justify="center" className="mt-8">
+            <button
+              onClick={handleStartNewAnalysis}
+              className="flex items-center gap-2 text-primary hover:underline"
+            >
+              <Upload size={16} />새 분석 시작하기
+            </button>
+          </Flex>
         )}
       </Container>
     </div>
