@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -24,6 +25,7 @@ interface LoginErrors {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuthContext();
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -85,10 +87,13 @@ export default function LoginPage() {
         formData.email === "test@example.com" &&
         formData.password === "123456"
       ) {
-        // 로그인 성공
-        localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("userEmail", formData.email);
-        navigate("/"); // 홈페이지로 이동
+        // 로그인 성공 - AuthContext의 login 함수 사용
+        login({
+          id: "user-1",
+          name: "테스트 사용자",
+          email: formData.email,
+        });
+        navigate("/upload"); // 분석화면으로 이동
       } else {
         setErrors({ general: "이메일 또는 비밀번호가 올바르지 않습니다." });
       }
@@ -102,7 +107,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-background to-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* 로고 섹션 */}
         <div className="text-center mb-8">
@@ -225,17 +230,6 @@ export default function LoginPage() {
             </div>
           </CardContent>
         </Card>
-
-        {/* 데모 안내 */}
-        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <h4 className="text-sm font-medium text-blue-900 mb-2">
-            데모 계정 정보
-          </h4>
-          <div className="text-sm text-blue-700 space-y-1">
-            <p>이메일: test@example.com</p>
-            <p>비밀번호: 123456</p>
-          </div>
-        </div>
 
         {/* 푸터 */}
         <div className="text-center mt-8">

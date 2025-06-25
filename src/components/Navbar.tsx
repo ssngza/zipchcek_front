@@ -1,17 +1,26 @@
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Container, Flex } from "@/components/ui/base";
 import { Button } from "@/components/ui/button";
-import { FileText, History, Home, Upload, User } from "lucide-react";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { FileText, History, LogIn, LogOut, Upload, User } from "lucide-react";
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function Navbar(): React.ReactNode {
+  const { isLoggedIn, logout } = useAuthContext();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <nav className="bg-background border-b border-border py-3 sticky top-0 z-10">
       <Container>
         <Flex justify="between" align="center">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-primary">집체크</span>
+          <Link to="/" className="flex items-center space-x-2 mr-4">
+            <h1 className="text-2xl font-bold text-primary">ZipCheck</h1>
           </Link>
 
           <Flex
@@ -19,15 +28,44 @@ export default function Navbar(): React.ReactNode {
             align="center"
             className="overflow-x-auto pb-1 hide-scrollbar"
           >
-            <NavLink to="/" icon={<Home size={18} />} label="홈" />
             <NavLink to="/upload" icon={<Upload size={18} />} label="업로드" />
             <NavLink to="/history" icon={<History size={18} />} label="기록" />
             <NavLink
-              to="/registration-guide"
+              to="/guide"
               icon={<FileText size={18} />}
               label="등기안내"
             />
-            <NavLink to="/profile" icon={<User size={18} />} label="프로필" />
+
+            {isLoggedIn ? (
+              <>
+                <NavLink
+                  to="/profile"
+                  icon={<User size={18} />}
+                  label="프로필"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-1"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={18} />
+                  <span className="hidden sm:inline">로그아웃</span>
+                </Button>
+              </>
+            ) : (
+              <Link to="/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  <LogIn size={18} />
+                  <span className="hidden sm:inline">로그인</span>
+                </Button>
+              </Link>
+            )}
+
             <div className="ml-2">
               <ThemeToggle />
             </div>
