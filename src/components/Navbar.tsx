@@ -28,16 +28,23 @@ export default function Navbar(): React.ReactNode {
             align="center"
             className="overflow-x-auto pb-1 hide-scrollbar"
           >
-            <NavLink to="/upload" icon={<Upload size={18} />} label="업로드" />
-            <NavLink to="/history" icon={<History size={18} />} label="기록" />
-            <NavLink
-              to="/guide"
-              icon={<FileText size={18} />}
-              label="등기안내"
-            />
-
             {isLoggedIn ? (
               <>
+                <NavLink
+                  to="/upload"
+                  icon={<Upload size={18} />}
+                  label="업로드"
+                />
+                <NavLink
+                  to="/history"
+                  icon={<History size={18} />}
+                  label="기록"
+                />
+                <NavLink
+                  to="/guide"
+                  icon={<FileText size={18} />}
+                  label="등기안내"
+                />
                 <NavLink
                   to="/profile"
                   icon={<User size={18} />}
