@@ -3,6 +3,7 @@ import HistoryFilters, {
   FilterOption,
   SortOption,
 } from "@/components/HistoryFilters";
+import HistoryPagination from "@/components/HistoryPagination";
 import HistorySearch from "@/components/HistorySearch";
 import { Navbar } from "@/components/Navbar";
 import { Box, Container, Flex, Heading, Text } from "@/components/ui/base";
@@ -32,13 +33,66 @@ const initialMockData = [
     riskScore: 15,
     issueCount: 0,
   },
+  // 페이지네이션 테스트를 위한 추가 데이터
+  {
+    id: "abcd1111efgh2222",
+    fileName: "서울시 마포구 합정동 111-222.pdf",
+    analysisDate: "2023-06-04",
+    riskScore: 85,
+    issueCount: 5,
+  },
+  {
+    id: "ijkl3333mnop4444",
+    fileName: "경기도 고양시 일산동구 장항동 333-444.pdf",
+    analysisDate: "2023-06-03",
+    riskScore: 35,
+    issueCount: 1,
+  },
+  {
+    id: "qrst5555uvwx6666",
+    fileName: "서울시 송파구 잠실동 555-666.pdf",
+    analysisDate: "2023-06-02",
+    riskScore: 25,
+    issueCount: 0,
+  },
+  {
+    id: "abcd7777efgh8888",
+    fileName: "경기도 안양시 동안구 평촌동 777-888.pdf",
+    analysisDate: "2023-06-01",
+    riskScore: 65,
+    issueCount: 2,
+  },
+  {
+    id: "ijkl9999mnop0000",
+    fileName: "서울시 영등포구 여의도동 999-000.pdf",
+    analysisDate: "2023-05-31",
+    riskScore: 55,
+    issueCount: 1,
+  },
+  {
+    id: "qrst1212uvwx3434",
+    fileName: "경기도 수원시 영통구 원천동 121-343.pdf",
+    analysisDate: "2023-05-30",
+    riskScore: 10,
+    issueCount: 0,
+  },
+  {
+    id: "abcd5656efgh7878",
+    fileName: "서울시 강동구 천호동 565-787.pdf",
+    analysisDate: "2023-05-29",
+    riskScore: 80,
+    issueCount: 4,
+  },
 ];
+
+const ITEMS_PER_PAGE = 4; // 페이지당 표시할 항목 수
 
 const HistoryPage: React.FC = () => {
   const [historyData, setHistoryData] = useState(initialMockData);
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   // 분석 기록 삭제 처리
   const handleDeleteHistory = (id: string) => {
@@ -91,11 +145,33 @@ const HistoryPage: React.FC = () => {
     });
   }, [sortBy, filterBy, searchQuery, historyData]);
 
+  // 페이지네이션 데이터
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredAndSortedData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredAndSortedData, currentPage]);
+
+  // 총 페이지 수 계산
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredAndSortedData.length / ITEMS_PER_PAGE);
+  }, [filteredAndSortedData]);
+
   // 필터 및 검색 초기화
   const handleResetFilters = () => {
     setSortBy("date-desc");
     setFilterBy("all");
     setSearchQuery("");
+    setCurrentPage(1); // 필터 초기화 시 첫 페이지로 이동
+  };
+
+  // 페이지 변경 처리
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // 페이지 상단으로 스크롤
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -146,8 +222,8 @@ const HistoryPage: React.FC = () => {
         {/* 분석 기록 목록 영역 */}
         <Box className="bg-white rounded-lg shadow-lg p-6">
           <Flex direction="column" gap={4}>
-            {filteredAndSortedData.length > 0 ? (
-              filteredAndSortedData.map(item => (
+            {paginatedData.length > 0 ? (
+              paginatedData.map(item => (
                 <HistoryCard
                   key={item.id}
                   id={item.id}
@@ -180,12 +256,31 @@ const HistoryPage: React.FC = () => {
           </Flex>
         </Box>
 
-        {/* 페이지네이션 영역 (추후 구현) */}
+        {/* 페이지네이션 영역 */}
         <Flex justify="center" className="mt-8">
-          <Text className="text-sm text-gray-500">
-            페이지네이션 (개발 예정)
-          </Text>
+          {filteredAndSortedData.length > 0 ? (
+            <HistoryPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          ) : (
+            <Text className="text-sm text-gray-500">검색 결과가 없습니다</Text>
+          )}
         </Flex>
+
+        {/* 페이지 정보 표시 */}
+        {filteredAndSortedData.length > 0 && (
+          <Text className="text-xs text-gray-500 text-center mt-2">
+            총 {filteredAndSortedData.length}개 항목 중{" "}
+            {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
+            {Math.min(
+              currentPage * ITEMS_PER_PAGE,
+              filteredAndSortedData.length
+            )}
+            개 표시
+          </Text>
+        )}
       </Container>
     </div>
   );
