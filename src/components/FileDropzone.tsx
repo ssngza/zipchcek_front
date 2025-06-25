@@ -98,10 +98,10 @@ export default function FileDropzone({
           border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
           ${
             isDragOver
-              ? "border-blue-500 bg-blue-50 scale-105"
-              : "border-gray-300 hover:border-blue-400 hover:bg-gray-50"
+              ? "border-primary bg-primary/10 scale-105"
+              : "border-border hover:border-primary/50 hover:bg-muted/50"
           }
-          ${error ? "border-red-300 bg-red-50" : ""}
+          ${error ? "border-destructive bg-destructive/10" : ""}
         `}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -121,12 +121,16 @@ export default function FileDropzone({
           {/* 업로드 아이콘 */}
           <div
             className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center transition-colors ${
-              isDragOver ? "bg-blue-200" : error ? "bg-red-100" : "bg-blue-100"
+              isDragOver
+                ? "bg-primary/20"
+                : error
+                  ? "bg-destructive/20"
+                  : "bg-primary/10"
             }`}
           >
             {error ? (
               <svg
-                className="w-8 h-8 text-red-500"
+                className="w-8 h-8 text-destructive"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -141,7 +145,7 @@ export default function FileDropzone({
             ) : (
               <svg
                 className={`w-8 h-8 ${
-                  isDragOver ? "text-blue-600" : "text-blue-500"
+                  isDragOver ? "text-primary" : "text-primary"
                 }`}
                 fill="none"
                 stroke="currentColor"
@@ -161,26 +165,28 @@ export default function FileDropzone({
           <div>
             {error ? (
               <div>
-                <p className="text-lg font-medium text-red-700 mb-2">
+                <p className="text-lg font-medium text-destructive mb-2">
                   업로드 오류
                 </p>
-                <p className="text-red-600">{error}</p>
+                <p className="text-destructive/80">{error}</p>
               </div>
             ) : isDragOver ? (
               <div>
-                <p className="text-lg font-medium text-blue-700 mb-2">
+                <p className="text-lg font-medium text-primary mb-2">
                   파일을 놓으세요
                 </p>
-                <p className="text-blue-600">
+                <p className="text-primary/80">
                   파일을 여기에 놓으면 업로드됩니다
                 </p>
               </div>
             ) : (
               <div>
-                <p className="text-lg font-medium text-gray-900 mb-2">
+                <p className="text-lg font-medium text-foreground mb-2">
                   파일을 드래그하여 업로드하세요
                 </p>
-                <p className="text-gray-500">또는 클릭하여 파일을 선택하세요</p>
+                <p className="text-muted-foreground">
+                  또는 클릭하여 파일을 선택하세요
+                </p>
               </div>
             )}
           </div>
@@ -216,11 +222,11 @@ export default function FileDropzone({
       </div>
 
       {/* 파일 형식 안내 */}
-      <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-        <h4 className="text-sm font-medium text-blue-900 mb-2">
+      <div className="mt-4 p-4 bg-primary/10 rounded-lg">
+        <h4 className="text-sm font-medium text-foreground mb-2">
           지원 파일 형식
         </h4>
-        <p className="text-sm text-blue-700">
+        <p className="text-sm text-muted-foreground">
           {acceptedTypes.join(", ").toUpperCase()} 파일만 업로드 가능합니다.
           (최대 {maxFileSize}MB)
         </p>

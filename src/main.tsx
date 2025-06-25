@@ -1,4 +1,5 @@
 import App from "@/App.tsx";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import "@/index.css";
 import "@/styles/print.css";
 import React from "react";
@@ -7,7 +8,9 @@ import { Toaster } from "sonner";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
-    <Toaster position="top-right" richColors closeButton />
+    <ThemeProvider>
+      <App />
+      <Toaster position="top-right" richColors closeButton />
+    </ThemeProvider>
   </React.StrictMode>
 );

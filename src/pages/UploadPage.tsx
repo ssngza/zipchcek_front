@@ -32,9 +32,9 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-background">
       {/* 헤더 네비게이션 */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-background shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* 로고 */}
@@ -46,19 +46,19 @@ export default function UploadPage() {
             <nav className="hidden md:flex items-center space-x-6">
               <Link
                 to="/upload"
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-foreground hover:text-primary transition-colors"
               >
                 파일 업로드
               </Link>
               <Link
                 to="/guide"
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-foreground hover:text-primary transition-colors"
               >
                 등기부 가이드
               </Link>
               <Link
                 to="/support"
-                className="text-gray-700 hover:text-primary transition-colors"
+                className="text-foreground hover:text-primary transition-colors"
               >
                 고객지원
               </Link>
@@ -79,10 +79,10 @@ export default function UploadPage() {
         <div className="max-w-4xl mx-auto">
           {/* 페이지 타이틀 */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            <h1 className="text-3xl font-bold text-foreground mb-4">
               등기부등본 분석
             </h1>
-            <p className="text-lg text-gray-600 mb-6">
+            <p className="text-lg text-muted-foreground mb-6">
               등기부등본 PDF 파일을 업로드하여 전세사기 위험도를 분석받으세요
             </p>
           </div>
@@ -105,12 +105,12 @@ export default function UploadPage() {
 
                   {/* 선택된 파일 정보 */}
                   {selectedFile && (
-                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="mt-6 p-4 bg-accent/20 border border-accent rounded-lg">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                          <div className="w-10 h-10 bg-accent/30 rounded-full flex items-center justify-center">
                             <svg
-                              className="w-5 h-5 text-green-600"
+                              className="w-5 h-5 text-accent-foreground"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
@@ -122,10 +122,10 @@ export default function UploadPage() {
                             </svg>
                           </div>
                           <div>
-                            <p className="font-medium text-green-900">
+                            <p className="font-medium text-foreground">
                               {selectedFile.name}
                             </p>
-                            <p className="text-sm text-green-700">
+                            <p className="text-sm text-muted-foreground">
                               {(selectedFile.size / (1024 * 1024)).toFixed(2)}{" "}
                               MB
                             </p>
@@ -168,7 +168,7 @@ export default function UploadPage() {
                   <CardTitle className="text-lg">등기부 발급 가이드</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     등기부등본 발급 방법을 안내해드립니다.
                   </p>
                   <RegistrationGuideModal>
@@ -186,9 +186,9 @@ export default function UploadPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-accent/30 rounded-full flex items-center justify-center">
                       <svg
-                        className="w-4 h-4 text-green-600"
+                        className="w-4 h-4 text-accent-foreground"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -201,16 +201,16 @@ export default function UploadPage() {
                     </div>
                     <div>
                       <p className="font-medium">소유권 확인</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         등기부상 소유자 정보 검증
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
                       <svg
-                        className="w-4 h-4 text-blue-600"
+                        className="w-4 h-4 text-primary"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -223,16 +223,16 @@ export default function UploadPage() {
                     </div>
                     <div>
                       <p className="font-medium">권리관계 분석</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         담보권 및 제한사항 검토
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-destructive/20 rounded-full flex items-center justify-center">
                       <svg
-                        className="w-4 h-4 text-orange-600"
+                        className="w-4 h-4 text-destructive"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                       >
@@ -245,7 +245,7 @@ export default function UploadPage() {
                     </div>
                     <div>
                       <p className="font-medium">위험도 평가</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         AI 기반 사기 위험도 분석
                       </p>
                     </div>
@@ -258,9 +258,9 @@ export default function UploadPage() {
       </main>
 
       {/* 푸터 */}
-      <footer className="bg-white border-t mt-16">
+      <footer className="bg-background border-t mt-16">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center text-gray-500">
+          <div className="text-center text-muted-foreground">
             <p>© 2024 ZipCheck. 모든 권리 보유.</p>
           </div>
         </div>

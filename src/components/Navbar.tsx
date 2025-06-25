@@ -1,3 +1,4 @@
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Container, Flex } from "@/components/ui/base";
 import { Button } from "@/components/ui/button";
 import { FileText, History, Home, Upload, User } from "lucide-react";
@@ -6,7 +7,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export default function Navbar(): React.ReactNode {
   return (
-    <nav className="bg-white shadow-sm py-3 sticky top-0 z-10">
+    <nav className="bg-background border-b border-border py-3 sticky top-0 z-10">
       <Container>
         <Flex justify="between" align="center">
           <Link to="/" className="flex items-center gap-2">
@@ -27,6 +28,9 @@ export default function Navbar(): React.ReactNode {
               label="등기안내"
             />
             <NavLink to="/profile" icon={<User size={18} />} label="프로필" />
+            <div className="ml-2">
+              <ThemeToggle />
+            </div>
           </Flex>
         </Flex>
       </Container>
