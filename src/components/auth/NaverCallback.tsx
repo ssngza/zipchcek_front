@@ -1,6 +1,6 @@
 import { useAuthContext } from "@/contexts/AuthContext";
 import { naverApi } from "@/services/naver.api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface NaverUserProfile {
@@ -40,7 +40,11 @@ export default function NaverCallback() {
   const navigate = useNavigate();
   const { login } = useAuthContext();
 
+  const hasRun = useRef(false);
+
   useEffect(() => {
+    if (hasRun.current) return;
+
     const processNaverCallback = async () => {
       try {
         // URL에서 인증 코드와 상태 파라미터 추출
@@ -63,6 +67,10 @@ export default function NaverCallback() {
 
         // 저장된 상태값과 비교하여 CSRF 공격 방지
         const savedState = localStorage.getItem("naverAuthState");
+
+        console.log("state", state);
+        console.log("savedState", savedState);
+
         if (state !== savedState) {
           throw new Error(
             "상태값이 일치하지 않습니다. 보안 위험이 감지되었습니다."
@@ -115,8 +123,9 @@ export default function NaverCallback() {
       }
     };
 
+    hasRun.current = true;
     processNaverCallback();
-  }, [login, navigate]);
+  }, []);
 
   if (loading) {
     return (

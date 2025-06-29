@@ -19,7 +19,6 @@ export const getNaverLoginUrl = () => {
     client_id: NAVER_CLIENT_ID,
     redirect_uri: NAVER_REDIRECT_URI,
     state,
-    auth_type: "reprompt",
   });
 
   return `${naverAuthUrl}?${params.toString()}`;
