@@ -1,18 +1,26 @@
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Container, Flex } from "@/components/ui/base";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { FileText, History, LogIn, LogOut, Upload, User } from "lucide-react";
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function Navbar(): React.ReactNode {
-  const { isLoggedIn, logout } = useAuthContext();
+  const { isLoggedIn, logout, user } = useAuthContext();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate("/login");
   };
 
   return (
@@ -36,29 +44,52 @@ export default function Navbar(): React.ReactNode {
                   label="업로드"
                 />
                 <NavLink
-                  to="/history"
-                  icon={<History size={18} />}
-                  label="기록"
-                />
-                <NavLink
                   to="/guide"
                   icon={<FileText size={18} />}
                   label="등기안내"
                 />
-                <NavLink
-                  to="/profile"
-                  icon={<User size={18} />}
-                  label="프로필"
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center gap-1"
-                  onClick={handleLogout}
-                >
-                  <LogOut size={18} />
-                  <span className="hidden sm:inline">로그아웃</span>
-                </Button>
+
+                {/* 프로필 드롭다운 메뉴 */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center gap-1"
+                    >
+                      <User size={18} />
+                      <span className=" sm:inline">
+                        {user?.name || "프로필"}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-48 z-50"
+                    side="bottom"
+                    align="start"
+                    avoidCollisions={true}
+                  >
+                    <DropdownMenuLabel>내 계정</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <Link to="/history">
+                      <DropdownMenuItem>
+                        <History size={16} className="mr-2" />
+                        기록
+                      </DropdownMenuItem>
+                    </Link>
+                    {/* <Link to="/profile">
+                      <DropdownMenuItem>
+                        <User size={16} className="mr-2" />
+                        프로필
+                      </DropdownMenuItem>
+                    </Link> */}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut size={16} className="mr-2" />
+                      로그아웃
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               <Link to="/login">
