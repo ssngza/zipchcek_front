@@ -1,15 +1,36 @@
 import { useAuthContext } from "@/contexts/AuthContext";
-import { handleNaverCallback } from "@/lib/supabase";
+import { naverApi } from "@/services/naver.api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface AuthData {
-  user?: {
+interface NaverUserProfile {
+  id: string;
+  email?: string;
+  name?: string;
+  nickname?: string;
+  profile_image?: string;
+}
+
+interface NaverTokenResponse {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+}
+
+interface NaverProfileResponse {
+  resultcode: string;
+  message: string;
+  response: {
     id: string;
     email?: string;
-    user_metadata?: {
-      name?: string;
-    };
+    name?: string;
+    nickname?: string;
+    profile_image?: string;
+    gender?: string;
+    age?: string;
+    birthday?: string;
+    mobile?: string;
   };
 }
 
@@ -26,27 +47,64 @@ export default function NaverCallback() {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get("code");
         const state = urlParams.get("state");
+        // 에러 파라미터 확인
+        const errorParam = urlParams.get("error");
+        const errorDescription = urlParams.get("error_description");
+
+        if (errorParam) {
+          throw new Error(
+            `네이버 로그인 오류: ${errorParam} - ${errorDescription || "알 수 없는 오류"}`
+          );
+        }
 
         if (!code || !state) {
           throw new Error("인증 코드 또는 상태 파라미터가 없습니다.");
         }
 
-        // 네이버 로그인 콜백 처리
-        const authData = (await handleNaverCallback(code, state)) as AuthData;
+        // 저장된 상태값과 비교하여 CSRF 공격 방지
+        const savedState = localStorage.getItem("naverAuthState");
+        if (state !== savedState) {
+          throw new Error(
+            "상태값이 일치하지 않습니다. 보안 위험이 감지되었습니다."
+          );
+        }
 
-        // 사용자 정보를 AuthContext에 저장
-        if (authData?.user) {
-          login({
-            id: authData.user.id,
-            name: authData.user.user_metadata?.name || "네이버 사용자",
-            email: authData.user.email || "",
-          });
+        // 상태값 사용 후 삭제
+        localStorage.removeItem("naverAuthState");
 
-          // 로그인 성공 후 홈페이지로 리다이렉트
-          navigate("/", { replace: true });
-        } else {
+        // 1. 액세스 토큰 요청
+        const tokenResponse = (await naverApi.getAccessToken(
+          code,
+          state
+        )) as NaverTokenResponse;
+        console.log(JSON.stringify(tokenResponse));
+        if (!tokenResponse.access_token) {
+          throw new Error("액세스 토큰을 가져오는데 실패했습니다.");
+        }
+
+        // 2. 사용자 프로필 정보 요청
+        const profileResponse = (await naverApi.getUserProfile(
+          tokenResponse.access_token
+        )) as NaverProfileResponse;
+
+        if (profileResponse.resultcode !== "00" || !profileResponse.response) {
           throw new Error("사용자 정보를 가져오는데 실패했습니다.");
         }
+
+        const userProfile = profileResponse.response;
+
+        // 3. 사용자 정보를 AuthContext에 저장
+        login({
+          id: userProfile.id,
+          name: userProfile.name || userProfile.nickname || "네이버 사용자",
+          email: userProfile.email || "",
+          avatar_url: userProfile.profile_image,
+          provider: "naver",
+          provider_id: userProfile.id,
+        });
+
+        // 로그인 성공 후 홈페이지로 리다이렉트
+        navigate("/", { replace: true });
       } catch (err) {
         console.error("네이버 로그인 콜백 처리 중 오류 발생:", err);
         setError(

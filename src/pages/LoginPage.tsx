@@ -98,7 +98,7 @@ export default function LoginPage() {
       } else {
         setErrors({ general: "이메일 또는 비밀번호가 올바르지 않습니다." });
       }
-    } catch (error) {
+    } catch {
       setErrors({
         general: "로그인 중 오류가 발생했습니다. 다시 시도해주세요.",
       });

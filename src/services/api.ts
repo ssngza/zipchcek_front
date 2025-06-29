@@ -1,74 +1,70 @@
 import { API_ENDPOINTS } from "@/constants";
-import { ApiResponse } from "@/types";
+import axios from "axios";
 
 // API 기본 설정
 const API_BASE_URL = API_ENDPOINTS.base;
 
-class ApiService {
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
-    try {
-      const url = `${API_BASE_URL}${endpoint}`;
-      const config: RequestInit = {
-        headers: {
-          "Content-Type": "application/json",
-          ...options.headers,
-        },
-        ...options,
-      };
+// 기본 axios 인스턴스 생성
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
 
-      const response = await fetch(url, config);
-      const data = await response.json();
-
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.message || "API 요청에 실패했습니다.",
-        };
-      }
-
-      return {
-        success: true,
-        data: data,
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "알 수 없는 오류가 발생했습니다.",
-      };
+// 요청 인터셉터 설정
+api.interceptors.request.use(
+  config => {
+    // 로컬 스토리지에서 토큰 가져오기
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  error => {
+    return Promise.reject(error);
   }
+);
 
-  // GET 요청
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { method: "GET" });
-  }
+// 기본 API 함수들
+export default {
+  // 파일 업로드 API
+  uploadFile: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
 
-  // POST 요청
-  async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, {
-      method: "POST",
-      body: data ? JSON.stringify(data) : undefined,
+    const response = await api.post("/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
-  }
+    return response.data;
+  },
 
-  // PUT 요청
-  async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, {
-      method: "PUT",
-      body: data ? JSON.stringify(data) : undefined,
+  // 계약서 분석 API
+  analyzeContract: async (fileId: string) => {
+    const response = await api.post("/analyze", { fileId });
+    return response.data;
+  },
+
+  // 분석 결과 조회 API
+  getAnalysisResult: async (analysisId: string) => {
+    const response = await api.get(`/analysis/${analysisId}`);
+    return response.data;
+  },
+
+  // 분석 기록 조회 API
+  getHistory: async (page = 1, limit = 10) => {
+    const response = await api.get("/history", {
+      params: { page, limit },
     });
-  }
+    return response.data;
+  },
 
-  // DELETE 요청
-  async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.request<T>(endpoint, { method: "DELETE" });
-  }
-}
-
-export const apiService = new ApiService();
+  // 분석 기록 삭제 API
+  deleteHistory: async (historyId: string) => {
+    const response = await api.delete(`/history/${historyId}`);
+    return response.data;
+  },
+};
