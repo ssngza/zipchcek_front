@@ -7,27 +7,35 @@ import { useNavigate } from "react-router-dom";
 export default function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
+    setError(null); // 새 파일 선택 시 오류 초기화
     console.log("선택된 파일:", file.name, file.size, file.type);
   };
 
-  const handleStartAnalysis = () => {
+  const handleStartAnalysis = async () => {
     if (!selectedFile) return;
 
     setIsSubmitting(true);
+    setError(null);
 
-    // 실제 서버 요청 대신 로딩 페이지로 이동
-    setTimeout(() => {
+    try {
+      // 분석 시작 시 로딩 페이지로 이동
       navigate("/loading", {
         state: {
           fileSize: selectedFile.size / 1024, // KB 단위로 전달
           fileName: selectedFile.name,
+          fileObject: selectedFile, // 파일 객체 전달
         },
       });
-    }, 500);
+    } catch (err) {
+      console.error("파일 분석 시작 중 오류 발생:", err);
+      setError("파일 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -130,6 +138,13 @@ export default function UploadPage() {
                   <CardTitle className="text-xl">파일 업로드</CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {/* 에러 메시지 */}
+                  {error && (
+                    <div className="mb-4 p-4 bg-destructive/10 border border-destructive rounded-lg text-destructive text-center">
+                      {error}
+                    </div>
+                  )}
+
                   {/* 파일 드롭존 */}
                   <FileDropzone
                     onFileSelect={handleFileSelect}

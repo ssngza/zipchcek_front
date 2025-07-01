@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import api from "@/services/api";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -48,7 +49,7 @@ interface LoadingPageProps {
 
 export default function LoadingPage({
   onCancel,
-  testMode = true,
+  testMode = false, // 기본값을 false로 변경
 }: LoadingPageProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,13 +58,21 @@ export default function LoadingPage({
   const fileData = location.state || {
     fileSize: 1000,
     fileName: "등기부등본.pdf",
+    fileObject: null,
   };
+
   const fileSize = fileData.fileSize || 1000; // 기본값 1MB (1000KB)
+  const file = fileData.fileObject as File | null;
 
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [isError, setIsError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>(
+    "서버 연결에 문제가 발생했습니다. 잠시 후 다시 시도해주세요."
+  );
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [isApiCallComplete, setIsApiCallComplete] = useState<boolean>(false);
 
   const currentStep = STEP_ORDER[currentStepIndex];
   const totalSteps = STEP_ORDER.length;
@@ -104,58 +113,139 @@ export default function LoadingPage({
     }
   };
 
+  // API 호출 함수
+  const callAnalysisApi = async () => {
+    if (!file) {
+      setIsError(true);
+      setErrorMessage("파일이 없습니다. 다시 업로드해주세요.");
+      return;
+    }
+
+    try {
+      // 업로드 단계 진행
+      setCurrentStepIndex(0); // upload 단계
+
+      // API 호출
+      const result = await api.analyzeRegistration(
+        file,
+        "gpt-4o",
+        uploadProgress => {
+          // 업로드 진행률 업데이트
+          setProgress(uploadProgress);
+
+          // 전체 진행도 업데이트
+          const overallProgress = calculateOverallProgress(0, uploadProgress);
+          document.title = `분석 중... ${overallProgress}% | ZipCheck`;
+        }
+      );
+
+      // API 호출 완료 후 결과 저장
+      setAnalysisResult(result);
+      setIsApiCallComplete(true);
+
+      // 나머지 단계 진행 (텍스트 추출, AI 분석, 결과 생성)
+      // API가 이미 완료되었지만, 사용자 경험을 위해 나머지 단계도 표시
+      setCurrentStepIndex(1); // extract 단계로 이동
+    } catch (error) {
+      console.error("API 호출 중 오류 발생:", error);
+      setIsError(true);
+      setErrorMessage("분석 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  // 초기 API 호출
+  useEffect(() => {
+    if (!testMode && !isError) {
+      callAnalysisApi();
+    }
+  }, []);
+
   useEffect(() => {
     if (isError) return;
 
-    let stepDuration = ANALYSIS_STEPS[currentStep].duration * 1000; // ms로 변환
+    // 테스트 모드이거나 API 호출이 완료되지 않은 경우에만 시뮬레이션 진행
+    if (testMode || (currentStepIndex > 0 && isApiCallComplete)) {
+      let stepDuration = ANALYSIS_STEPS[currentStep].duration * 1000; // ms로 변환
 
-    // 파일 크기에 따른 단계별 시간 조정
-    if (currentStep === "extract" || currentStep === "analyze") {
-      const fileSizeMultiplier = fileSize / 1000; // MB 단위로 변환
-      stepDuration += fileSizeMultiplier * 1000; // 1MB당 1초 추가
-    }
-
-    const interval = 100; // 100ms마다 업데이트
-    let elapsed = 0;
-    let remaining = calculateTotalTime();
-
-    // 진행도 업데이트 타이머
-    const timer = setInterval(() => {
-      elapsed += interval;
-      const stepProgress = Math.min((elapsed / stepDuration) * 100, 100);
-      setProgress(stepProgress);
-
-      // 남은 시간 업데이트
-      remaining -= interval / 1000;
-      setTimeRemaining(Math.max(Math.ceil(remaining), 0));
-
-      // 전체 진행도 업데이트
-      const overallProgress = calculateOverallProgress(
-        currentStepIndex,
-        stepProgress
-      );
-      document.title = `분석 중... ${overallProgress}% | ZipCheck`;
-
-      // 현재 단계 완료 시 다음 단계로 이동
-      if (stepProgress >= 100) {
-        clearInterval(timer);
-
-        if (currentStepIndex < totalSteps - 1) {
-          setCurrentStepIndex(prev => prev + 1);
-        } else {
-          // 모든 단계 완료 시 결과 페이지로 이동
-          setTimeout(() => {
-            document.title = "분석 완료 | ZipCheck";
-            if (testMode) {
-              navigate("/result");
-            }
-          }, 500);
-        }
+      // 파일 크기에 따른 단계별 시간 조정
+      if (currentStep === "extract" || currentStep === "analyze") {
+        const fileSizeMultiplier = fileSize / 1000; // MB 단위로 변환
+        stepDuration += fileSizeMultiplier * 1000; // 1MB당 1초 추가
       }
-    }, interval);
 
-    return () => clearInterval(timer);
-  }, [currentStepIndex, fileSize, navigate, isError, testMode, currentStep]);
+      const interval = 100; // 100ms마다 업데이트
+      let elapsed = 0;
+      let remaining = calculateTotalTime();
+
+      // 진행도 업데이트 타이머
+      const timer = setInterval(() => {
+        elapsed += interval;
+        const stepProgress = Math.min((elapsed / stepDuration) * 100, 100);
+        setProgress(stepProgress);
+
+        // 남은 시간 업데이트
+        remaining -= interval / 1000;
+        setTimeRemaining(Math.max(Math.ceil(remaining), 0));
+
+        // 전체 진행도 업데이트
+        const overallProgress = calculateOverallProgress(
+          currentStepIndex,
+          stepProgress
+        );
+        document.title = `분석 중... ${overallProgress}% | ZipCheck`;
+
+        // 현재 단계 완료 시 다음 단계로 이동
+        if (stepProgress >= 100) {
+          clearInterval(timer);
+
+          if (currentStepIndex < totalSteps - 1) {
+            setCurrentStepIndex(prev => prev + 1);
+          } else {
+            // 모든 단계 완료 시 결과 페이지로 이동
+            setTimeout(() => {
+              document.title = "분석 완료 | ZipCheck";
+              navigate("/result", {
+                state: {
+                  analysisResult: analysisResult || {
+                    // 테스트 모드일 경우 더미 데이터
+                    riskScore: 65,
+                    issues: [
+                      {
+                        title: "소유권 이전 등기 미완료",
+                        severity: "high",
+                        description:
+                          "현재 등기부에 소유권 이전 등기가 완료되지 않았습니다.",
+                      },
+                      {
+                        title: "근저당권 설정",
+                        severity: "medium",
+                        description:
+                          "해당 부동산에 근저당권이 설정되어 있습니다.",
+                      },
+                    ],
+                    recommendations: [
+                      "전문 법무사와 상담하세요",
+                      "등기부등본을 정확히 확인하세요",
+                    ],
+                  },
+                },
+              });
+            }, 500);
+          }
+        }
+      }, interval);
+
+      return () => clearInterval(timer);
+    }
+  }, [
+    currentStepIndex,
+    fileSize,
+    navigate,
+    isError,
+    testMode,
+    currentStep,
+    isApiCallComplete,
+  ]);
 
   // 에러 시뮬레이션 (테스트용)
   const simulateError = () => {
@@ -168,6 +258,10 @@ export default function LoadingPage({
     setCurrentStepIndex(0);
     setProgress(0);
     setTimeRemaining(calculateTotalTime());
+
+    if (!testMode) {
+      callAnalysisApi();
+    }
   };
 
   return (
@@ -208,9 +302,7 @@ export default function LoadingPage({
               <h2 className="text-xl font-bold text-gray-900 mb-2">
                 분석 중 오류가 발생했습니다
               </h2>
-              <p className="text-gray-600 mb-6">
-                서버 연결에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.
-              </p>
+              <p className="text-gray-600 mb-6">{errorMessage}</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button onClick={handleRetry} className="flex-1">
                   다시 시도

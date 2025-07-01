@@ -16,20 +16,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, FileText, Printer } from "lucide-react";
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 export default function ResultPage() {
   const { propertyId } = useParams<{ propertyId: string }>();
+  const location = useLocation();
+
+  // LoadingPage에서 전달받은 분석 결과
+  const analysisData = location.state?.analysisResult;
 
   // 인쇄 모드 상태
   const [showPrintable, setShowPrintable] = useState(false);
 
-  // 테스트용 위험 점수 (실제로는 API에서 받아올 값)
-  const riskScore = 15; // 0-100 사이의 값 (낮을수록 안전)
+  // 테스트용 위험 점수 (API에서 받아온 값이 있으면 사용)
+  const riskScore = analysisData?.riskScore || 15; // 0-100 사이의 값 (낮을수록 안전)
 
-  // 테스트용 잠재적 문제 데이터 (실제로는 API에서 받아올 값)
-  const potentialIssues: Issue[] = [
+  // 테스트용 잠재적 문제 데이터 (API에서 받아온 값이 있으면 사용)
+  const [potentialIssues, setPotentialIssues] = useState<Issue[]>([
     {
       id: "1",
       title: "최근 소유권 변경",
@@ -60,7 +64,26 @@ export default function ResultPage() {
       recommendation:
         "가압류 사유와 해제 경위를 확인하고, 현재 다른 채무 관계가 있는지 확인하세요.",
     },
-  ];
+  ]);
+
+  // API 응답 데이터로 상태 업데이트
+  useEffect(() => {
+    if (analysisData?.issues && analysisData.issues.length > 0) {
+      // API에서 받은 이슈 데이터를 형식에 맞게 변환
+      const formattedIssues = analysisData.issues.map(
+        (issue: any, index: number) => ({
+          id: String(index + 1),
+          title: issue.title,
+          description: issue.description,
+          severity: issue.severity || "medium",
+          category: issue.category || "general",
+          recommendation: issue.recommendation || "전문가와 상담하세요.",
+        })
+      );
+
+      setPotentialIssues(formattedIssues);
+    }
+  }, [analysisData]);
 
   // 테스트용 사기 방지 체크리스트 항목 (실제로는 API에서 받아올 값)
   const fraudPreventionItems: ChecklistItem[] = [

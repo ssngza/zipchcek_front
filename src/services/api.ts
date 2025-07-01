@@ -4,6 +4,9 @@ import axios from "axios";
 // API 기본 설정
 const API_BASE_URL = API_ENDPOINTS.base;
 
+// 등기부등본 분석 API 엔드포인트
+const REGISTRATION_ANALYSIS_URL = "/openai/analyze-registration";
+
 // 기본 axios 인스턴스 생성
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -40,6 +43,37 @@ export default {
       },
     });
     return response.data;
+  },
+
+  // 등기부등본 분석 API
+  analyzeRegistration: async (
+    file: File,
+    model: string = "gpt-4o",
+    onProgress?: (progress: number) => void
+  ) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("model", model);
+
+    try {
+      const response = await api.post(REGISTRATION_ANALYSIS_URL, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: progressEvent => {
+          if (progressEvent.total && onProgress) {
+            const percentCompleted = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
+            onProgress(percentCompleted);
+          }
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("등기부등본 분석 API 호출 중 오류 발생:", error);
+      throw error;
+    }
   },
 
   // 계약서 분석 API
