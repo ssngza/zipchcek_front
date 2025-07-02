@@ -20,83 +20,31 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-// 임시 데이터 (상태로 관리하여 삭제 기능 구현)
-const initialMockData = [
-  {
-    id: "abcd1234efgh5678",
-    fileName: "서울시 강남구 역삼동 123-456.pdf",
-    analysisDate: "2023-06-15",
-    riskScore: 75,
-    issueCount: 3,
-  },
-  {
-    id: "ijkl9012mnop3456",
-    fileName: "경기도 성남시 분당구 서현동 789-101.pdf",
-    analysisDate: "2023-06-10",
-    riskScore: 45,
-    issueCount: 1,
-  },
-  {
-    id: "qrst7890uvwx1234",
-    fileName: "서울시 서초구 반포동 234-567.pdf",
-    analysisDate: "2023-06-05",
-    riskScore: 15,
-    issueCount: 0,
-  },
-  // 페이지네이션 테스트를 위한 추가 데이터
-  {
-    id: "abcd1111efgh2222",
-    fileName: "서울시 마포구 합정동 111-222.pdf",
-    analysisDate: "2023-06-04",
-    riskScore: 85,
-    issueCount: 5,
-  },
-  {
-    id: "ijkl3333mnop4444",
-    fileName: "경기도 고양시 일산동구 장항동 333-444.pdf",
-    analysisDate: "2023-06-03",
-    riskScore: 35,
-    issueCount: 1,
-  },
-  {
-    id: "qrst5555uvwx6666",
-    fileName: "서울시 송파구 잠실동 555-666.pdf",
-    analysisDate: "2023-06-02",
-    riskScore: 25,
-    issueCount: 0,
-  },
-  {
-    id: "abcd7777efgh8888",
-    fileName: "경기도 안양시 동안구 평촌동 777-888.pdf",
-    analysisDate: "2023-06-01",
-    riskScore: 65,
-    issueCount: 2,
-  },
-  {
-    id: "ijkl9999mnop0000",
-    fileName: "서울시 영등포구 여의도동 999-000.pdf",
-    analysisDate: "2023-05-31",
-    riskScore: 55,
-    issueCount: 1,
-  },
-  {
-    id: "qrst1212uvwx3434",
-    fileName: "경기도 수원시 영통구 원천동 121-343.pdf",
-    analysisDate: "2023-05-30",
-    riskScore: 10,
-    issueCount: 0,
-  },
-  {
-    id: "abcd5656efgh7878",
-    fileName: "서울시 강동구 천호동 565-787.pdf",
-    analysisDate: "2023-05-29",
-    riskScore: 80,
-    issueCount: 4,
-  },
-];
+// 분석 결과 인터페이스 정의
+interface AnalysisResult {
+  basic_info: {
+    real_estate: string;
+    identifier_number: string;
+    examination_datetime: string;
+    registry_office: string;
+  };
+  risk_analysis: {
+    positive_factors: string[];
+    caution_factors: string[];
+    risk_factors: string[];
+  };
+  // 기타 필요한 필드들...
+}
 
-// 빈 상태 테스트를 위한 빈 배열
-// const initialMockData = [];
+// 분석 이력 항목 인터페이스 정의
+interface HistoryItem {
+  id: string; // localStorage 키
+  fileName: string;
+  analysisDate: string;
+  riskScore: number;
+  issueCount: number;
+  data?: AnalysisResult; // 실제 분석 데이터 (필요시 로드)
+}
 
 // 모바일 환경에서는 페이지당 항목 수를 줄임
 const getItemsPerPage = () => {
@@ -105,7 +53,7 @@ const getItemsPerPage = () => {
 
 const HistoryPage: React.FC = () => {
   const navigate = useNavigate();
-  const [historyData, setHistoryData] = useState<typeof initialMockData>([]);
+  const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>("date-desc");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -126,19 +74,74 @@ const HistoryPage: React.FC = () => {
     };
   }, []);
 
-  // 데이터 로딩 시뮬레이션
+  // localStorage에서 분석 이력 로드
   useEffect(() => {
-    // 초기 데이터 로딩
-    const loadInitialData = () => {
+    const loadHistoryFromLocalStorage = () => {
       setIsLoading(true);
-      // 로딩 시간 시뮬레이션 (1-2초)
-      setTimeout(() => {
-        setHistoryData(initialMockData);
+
+      try {
+        // 이력 인덱스 가져오기
+        const historyIndexJson = localStorage.getItem("zipcheck_history_index");
+        const historyIndex = historyIndexJson
+          ? JSON.parse(historyIndexJson)
+          : [];
+
+        // 각 항목의 상세 데이터 로드
+        const historyItems: HistoryItem[] = [];
+
+        for (const key of historyIndex) {
+          try {
+            const analysisDataJson = localStorage.getItem(key);
+            if (analysisDataJson) {
+              const analysisData = JSON.parse(analysisDataJson);
+
+              // 파일명 추출 (키 형식: zipcheck_analysis_파일명)
+              const fileName =
+                key.replace("zipcheck_analysis_", "").replace(/_/g, " ") +
+                ".pdf";
+
+              // 분석 날짜 (현재는 데이터에 없으므로 현재 날짜 사용)
+              const analysisDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+
+              // 위험 점수 계산 (위험 요소 개수에 따라)
+              const riskFactorsCount =
+                analysisData.risk_analysis?.risk_factors?.length || 0;
+              const cautionFactorsCount =
+                analysisData.risk_analysis?.caution_factors?.length || 0;
+
+              // 위험 점수 계산 (위험 요소 * 20 + 주의 요소 * 10, 최대 100점)
+              const riskScore = Math.min(
+                100,
+                riskFactorsCount * 20 + cautionFactorsCount * 10
+              );
+
+              // 이슈 개수 (위험 요소 + 주의 요소)
+              const issueCount = riskFactorsCount + cautionFactorsCount;
+
+              historyItems.push({
+                id: key,
+                fileName,
+                analysisDate,
+                riskScore,
+                issueCount,
+                data: analysisData,
+              });
+            }
+          } catch (error) {
+            console.error(`분석 데이터 로드 오류 (${key}):`, error);
+          }
+        }
+
+        setHistoryData(historyItems);
+      } catch (error) {
+        console.error("이력 데이터 로드 오류:", error);
+        toast.error("분석 이력을 불러오는 중 오류가 발생했습니다.");
+      } finally {
         setIsLoading(false);
-      }, 1500);
+      }
     };
 
-    loadInitialData();
+    loadHistoryFromLocalStorage();
   }, []);
 
   // 검색 시 로딩 시뮬레이션
@@ -178,8 +181,28 @@ const HistoryPage: React.FC = () => {
 
   // 분석 기록 삭제 처리
   const handleDeleteHistory = (id: string) => {
-    setHistoryData(prev => prev.filter(item => item.id !== id));
-    toast.success("분석 기록이 삭제되었습니다.");
+    try {
+      // 로컬 스토리지에서 해당 항목 삭제
+      localStorage.removeItem(id);
+
+      // 인덱스에서도 해당 항목 삭제
+      const historyIndexJson = localStorage.getItem("zipcheck_history_index");
+      if (historyIndexJson) {
+        const historyIndex = JSON.parse(historyIndexJson);
+        const updatedIndex = historyIndex.filter((key: string) => key !== id);
+        localStorage.setItem(
+          "zipcheck_history_index",
+          JSON.stringify(updatedIndex)
+        );
+      }
+
+      // 상태 업데이트
+      setHistoryData(prev => prev.filter(item => item.id !== id));
+      toast.success("분석 기록이 삭제되었습니다.");
+    } catch (error) {
+      console.error("분석 기록 삭제 오류:", error);
+      toast.error("분석 기록 삭제 중 오류가 발생했습니다.");
+    }
   };
 
   // 필터링 및 정렬된 데이터

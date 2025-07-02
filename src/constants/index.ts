@@ -7,7 +7,7 @@ export const APP_CONFIG = {
 } as const;
 
 export const API_ENDPOINTS = {
-  base: import.meta.env.VITE_API_BASE_URL || "/api",
+  base: "/api",
   properties: "/properties",
   users: "/users",
   analysis: "/analysis",
