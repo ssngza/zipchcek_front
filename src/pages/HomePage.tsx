@@ -17,7 +17,9 @@ export default function HomePage() {
           {isLoggedIn ? (
             // 로그인 상태일 때는 분석하기 버튼만 표시
             <Link to="/upload">
-              <Button size="lg">분석하기</Button>
+              <Button size="lg" className="cursor-pointer">
+                분석하기
+              </Button>
             </Link>
           ) : (
             <Link to="/login">

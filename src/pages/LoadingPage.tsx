@@ -143,6 +143,33 @@ export default function LoadingPage({
       setAnalysisResult(result);
       setIsApiCallComplete(true);
 
+      // localStorage에 분석 결과 저장
+      try {
+        // 파일 이름을 키로 사용하여 결과 저장
+        const storageKey = `zipcheck_analysis_${file.name.replace(/\s+/g, "_").replace(/\.[^/.]+$/, "")}`;
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            timestamp: new Date().toISOString(),
+            fileName: file.name,
+            fileSize: file.size,
+            result: result,
+          })
+        );
+
+        // 분석 기록 인덱스 업데이트
+        const historyIndex = JSON.parse(
+          localStorage.getItem("zipcheck_history_index") || "[]"
+        );
+        historyIndex.push(storageKey);
+        localStorage.setItem(
+          "zipcheck_history_index",
+          JSON.stringify(historyIndex)
+        );
+      } catch (storageError) {
+        console.error("localStorage 저장 오류:", storageError);
+      }
+
       // 나머지 단계 진행 (텍스트 추출, AI 분석, 결과 생성)
       // API가 이미 완료되었지만, 사용자 경험을 위해 나머지 단계도 표시
       setCurrentStepIndex(1); // extract 단계로 이동

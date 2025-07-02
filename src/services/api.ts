@@ -4,9 +4,6 @@ import axios from "axios";
 // API 기본 설정
 const API_BASE_URL = API_ENDPOINTS.base;
 
-// 등기부등본 분석 API 엔드포인트
-const REGISTRATION_ANALYSIS_URL = "/openai/analyze-registration";
-
 // 기본 axios 인스턴스 생성
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -19,10 +16,10 @@ const api = axios.create({
 api.interceptors.request.use(
   config => {
     // 로컬 스토리지에서 토큰 가져오기
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // const token = localStorage.getItem("auth_token");
+    // if (token) {
+    //   config.headers.Authorization = `Bearer ${token}`;
+    // }
     return config;
   },
   error => {
@@ -56,19 +53,23 @@ export default {
     formData.append("model", model);
 
     try {
-      const response = await api.post(REGISTRATION_ANALYSIS_URL, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        onUploadProgress: progressEvent => {
-          if (progressEvent.total && onProgress) {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            onProgress(percentCompleted);
-          }
-        },
-      });
+      const response = await api.post(
+        "/openai/analyze-registration",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: progressEvent => {
+            if (progressEvent.total && onProgress) {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              onProgress(percentCompleted);
+            }
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("등기부등본 분석 API 호출 중 오류 발생:", error);
