@@ -1,5 +1,7 @@
+import ErrorDialog from "@/components/ErrorDialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import logger from "@/lib/logger";
 import api from "@/services/api";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -41,6 +43,18 @@ const ANALYSIS_STEPS: Record<AnalysisStep, AnalysisStepInfo> = {
 // 단계 순서 정의
 const STEP_ORDER: AnalysisStep[] = ["upload", "extract", "analyze", "generate"];
 
+// 최대 재시도 횟수
+const MAX_RETRY_COUNT = 3;
+
+// 문제 해결 팁
+const TROUBLESHOOTING_TIPS = [
+  "인터넷 연결 상태를 확인해주세요.",
+  "PDF 파일이 손상되지 않았는지 확인해주세요.",
+  "파일 크기가 20MB 이하인지 확인해주세요.",
+  "지원되는 PDF 형식인지 확인해주세요.",
+  "브라우저 캐시를 삭제하고 다시 시도해보세요.",
+];
+
 interface LoadingPageProps {
   fileSize?: number; // KB 단위
   onCancel?: () => void;
@@ -73,6 +87,8 @@ export default function LoadingPage({
   );
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isApiCallComplete, setIsApiCallComplete] = useState<boolean>(false);
+  const [retryCount, setRetryCount] = useState<number>(0);
+  const [isRetrying, setIsRetrying] = useState<boolean>(false);
 
   const currentStep = STEP_ORDER[currentStepIndex];
   const totalSteps = STEP_ORDER.length;
@@ -106,6 +122,7 @@ export default function LoadingPage({
 
   // 취소 핸들러
   const handleCancel = () => {
+    logger.info("분석 취소됨", { fileName: fileData.fileName }, "ANALYZE");
     if (onCancel) {
       onCancel();
     } else {
@@ -116,14 +133,30 @@ export default function LoadingPage({
   // API 호출 함수
   const callAnalysisApi = async () => {
     if (!file) {
+      logger.error(
+        "파일 객체 없음",
+        { fileName: fileData.fileName },
+        "ANALYZE"
+      );
       setIsError(true);
       setErrorMessage("파일이 없습니다. 다시 업로드해주세요.");
       return;
     }
 
     try {
+      setIsRetrying(false);
       // 업로드 단계 진행
       setCurrentStepIndex(0); // upload 단계
+
+      logger.info(
+        "등기부등본 분석 API 호출 시작",
+        {
+          fileName: file.name,
+          fileSize: file.size,
+          retryCount,
+        },
+        "ANALYZE"
+      );
 
       // API 호출
       const result = await api.analyzeRegistration(
@@ -140,8 +173,19 @@ export default function LoadingPage({
       );
 
       // API 호출 완료 후 결과 저장
+      logger.info(
+        "등기부등본 분석 API 호출 완료",
+        {
+          fileName: file.name,
+          resultSize: JSON.stringify(result).length,
+        },
+        "ANALYZE"
+      );
+
       setAnalysisResult(result);
       setIsApiCallComplete(true);
+      // 재시도 카운트 초기화
+      setRetryCount(0);
 
       // localStorage에 분석 결과 저장
       try {
@@ -166,23 +210,64 @@ export default function LoadingPage({
           "zipcheck_history_index",
           JSON.stringify(historyIndex)
         );
+
+        logger.info(
+          "분석 결과 localStorage 저장 완료",
+          {
+            fileName: file.name,
+            storageKey,
+          },
+          "STORAGE"
+        );
       } catch (storageError) {
-        console.error("localStorage 저장 오류:", storageError);
+        logger.error(
+          "localStorage 저장 오류",
+          {
+            error: storageError,
+            fileName: file.name,
+          },
+          "STORAGE"
+        );
       }
 
       // 나머지 단계 진행 (텍스트 추출, AI 분석, 결과 생성)
       // API가 이미 완료되었지만, 사용자 경험을 위해 나머지 단계도 표시
       setCurrentStepIndex(1); // extract 단계로 이동
     } catch (error) {
-      console.error("API 호출 중 오류 발생:", error);
+      logger.error(
+        "API 호출 중 오류 발생",
+        {
+          error,
+          fileName: file?.name,
+          retryCount,
+        },
+        "ANALYZE"
+      );
+
+      // 오류 메시지 설정
+      let message = "분석 중 오류가 발생했습니다. 다시 시도해주세요.";
+
+      if (error instanceof Error) {
+        message = error.message;
+      }
+
       setIsError(true);
-      setErrorMessage("분석 중 오류가 발생했습니다. 다시 시도해주세요.");
+      setErrorMessage(message);
     }
   };
 
   // 초기 API 호출
   useEffect(() => {
     if (!testMode && !isError) {
+      logger.info(
+        "LoadingPage 초기화",
+        {
+          fileName: fileData.fileName,
+          fileSize: fileSize,
+          testMode,
+        },
+        "ANALYZE"
+      );
       callAnalysisApi();
     }
   }, []);
@@ -203,6 +288,16 @@ export default function LoadingPage({
       const interval = 100; // 100ms마다 업데이트
       let elapsed = 0;
       let remaining = calculateTotalTime();
+
+      logger.debug(
+        `단계 시작: ${currentStep}`,
+        {
+          stepIndex: currentStepIndex,
+          duration: stepDuration,
+          totalSteps,
+        },
+        "ANALYZE"
+      );
 
       // 진행도 업데이트 타이머
       const timer = setInterval(() => {
@@ -225,12 +320,31 @@ export default function LoadingPage({
         if (stepProgress >= 100) {
           clearInterval(timer);
 
+          logger.debug(
+            `단계 완료: ${currentStep}`,
+            {
+              stepIndex: currentStepIndex,
+              nextStepIndex: currentStepIndex + 1,
+              isLastStep: currentStepIndex >= totalSteps - 1,
+            },
+            "ANALYZE"
+          );
+
           if (currentStepIndex < totalSteps - 1) {
             setCurrentStepIndex(prev => prev + 1);
           } else {
             // 모든 단계 완료 시 결과 페이지로 이동
             setTimeout(() => {
               document.title = "분석 완료 | ZipCheck";
+              logger.info(
+                "분석 완료, 결과 페이지로 이동",
+                {
+                  fileName: fileData.fileName,
+                  hasResult: !!analysisResult,
+                },
+                "ANALYZE"
+              );
+
               navigate("/result", {
                 state: {
                   analysisResult: analysisResult || {
@@ -276,15 +390,47 @@ export default function LoadingPage({
 
   // 에러 시뮬레이션 (테스트용)
   const simulateError = () => {
+    logger.debug("에러 시뮬레이션 실행", null, "TEST");
     setIsError(true);
   };
 
   // 재시도 핸들러
   const handleRetry = () => {
+    // 최대 재시도 횟수를 초과한 경우
+    if (retryCount >= MAX_RETRY_COUNT) {
+      logger.warn(
+        "최대 재시도 횟수 초과",
+        {
+          retryCount,
+          maxRetries: MAX_RETRY_COUNT,
+          fileName: fileData.fileName,
+        },
+        "ANALYZE"
+      );
+
+      setErrorMessage(
+        `최대 재시도 횟수(${MAX_RETRY_COUNT}회)를 초과했습니다. 나중에 다시 시도하거나 고객센터에 문의해주세요.`
+      );
+      return;
+    }
+
+    const newRetryCount = retryCount + 1;
+    logger.info(
+      "분석 재시도",
+      {
+        retryCount: newRetryCount,
+        maxRetries: MAX_RETRY_COUNT,
+        fileName: fileData.fileName,
+      },
+      "ANALYZE"
+    );
+
     setIsError(false);
     setCurrentStepIndex(0);
     setProgress(0);
     setTimeRemaining(calculateTotalTime());
+    setRetryCount(newRetryCount);
+    setIsRetrying(true);
 
     if (!testMode) {
       callAnalysisApi();
@@ -302,48 +448,23 @@ export default function LoadingPage({
         </div>
       </header>
 
+      {/* 에러 다이얼로그 */}
+      <ErrorDialog
+        open={isError}
+        title="분석 중 오류가 발생했습니다"
+        message={errorMessage}
+        onRetry={handleRetry}
+        onCancel={handleCancel}
+        maxRetries={MAX_RETRY_COUNT}
+        currentRetry={retryCount}
+        showTroubleshooting={retryCount >= MAX_RETRY_COUNT}
+        troubleshootingTips={TROUBLESHOOTING_TIPS}
+      />
+
       {/* 메인 컨텐츠 */}
       <main className="flex-grow flex items-center justify-center p-4">
         <div className="max-w-md w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
-          {isError ? (
-            // 에러 상태 UI
-            <div className="p-8 text-center">
-              <div className="mb-6 flex justify-center">
-                <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center">
-                  <svg
-                    className="w-10 h-10 text-red-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </div>
-              </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
-                분석 중 오류가 발생했습니다
-              </h2>
-              <p className="text-gray-600 mb-6">{errorMessage}</p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button onClick={handleRetry} className="flex-1">
-                  다시 시도
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleCancel}
-                  className="flex-1"
-                >
-                  취소
-                </Button>
-              </div>
-            </div>
-          ) : (
+          {!isError && (
             // 로딩 상태 UI
             <div className="p-8">
               {/* 파일 정보 표시 */}
@@ -363,7 +484,9 @@ export default function LoadingPage({
                   animate={{ opacity: 1, y: 0 }}
                   className="text-xl font-bold text-gray-900 mb-2"
                 >
-                  {ANALYSIS_STEPS[currentStep].title}
+                  {isRetrying
+                    ? `재시도 중: ${ANALYSIS_STEPS[currentStep].title}`
+                    : ANALYSIS_STEPS[currentStep].title}
                 </motion.h2>
                 <motion.p
                   key={`desc-${currentStep}`}
@@ -373,6 +496,15 @@ export default function LoadingPage({
                 >
                   {ANALYSIS_STEPS[currentStep].description}
                 </motion.p>
+                {isRetrying && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-sm text-amber-600 mt-2"
+                  >
+                    재시도 횟수: {retryCount}/{MAX_RETRY_COUNT}
+                  </motion.p>
+                )}
               </div>
 
               {/* 진행 상태 표시 */}
