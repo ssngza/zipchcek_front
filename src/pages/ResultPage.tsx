@@ -130,7 +130,7 @@ export default function ResultPage() {
           const storedData = localStorage.getItem(storageId);
           if (storedData) {
             const parsedData = JSON.parse(storedData);
-            setAnalysisData(parsedData.result);
+            setAnalysisData(parsedData.result.response);
             console.log("데이터를 localStorage에서 로드했습니다:", storageId);
             setIsLoading(false);
             return;
