@@ -8,10 +8,10 @@ export enum LogLevel {
 
 // 현재 환경에 따른 로그 레벨 설정
 const currentLogLevel =
-  process.env.NODE_ENV === "production" ? LogLevel.INFO : LogLevel.DEBUG;
+  import.meta.env.NODE_ENV === "production" ? LogLevel.INFO : LogLevel.DEBUG;
 
 // 원격 로깅 서비스 URL (필요한 경우 설정)
-const REMOTE_LOGGING_URL = process.env.REMOTE_LOGGING_URL || "";
+const REMOTE_LOGGING_URL = import.meta.env.VITE_REMOTE_LOGGING_URL || "";
 
 // 로그 메시지 형식 정의
 interface LogMessage {
