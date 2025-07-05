@@ -1,6 +1,6 @@
 # Task ID: 1
 # Title: 프로젝트 저장소 및 개발 환경 설정
-# Status: pending
+# Status: done
 # Dependencies: None
 # Priority: high
 # Description: ZipCheck 프로젝트의 저장소를 초기화하고 프론트엔드 개발 환경을 설정합니다.
@@ -16,7 +16,7 @@
 2. 개발 서버가 오류 없이 시작되는지 확인합니다.
 
 # Subtasks:
-## 1. Git 저장소 생성 [pending]
+## 1. Git 저장소 생성 [done]
 ### Dependencies: None
 ### Description: ZipCheck 프로젝트를 위한 새로운 Git 저장소를 생성합니다.
 ### Details:
@@ -24,7 +24,7 @@
 2. 저장소 이름은 'zipcheck'으로 설정합니다.
 3. 저장소를 로컬 환경에 클론합니다.
 
-## 2. React 프로젝트 설정 [pending]
+## 2. React 프로젝트 설정 [done]
 ### Dependencies: 1.1
 ### Description: TypeScript와 함께 Create React App을 사용하여 프론트엔드 프로젝트를 초기화합니다.
 ### Details:
@@ -32,7 +32,7 @@
 2. 필요한 기본 패키지를 설치합니다.
 3. 프로젝트 구조를 확인하고 불필요한 파일을 제거합니다.
 
-## 3. UI 라이브러리 설정 [pending]
+## 3. UI 라이브러리 설정 [done]
 ### Dependencies: 1.2
 ### Description: TailwindCSS와 Shadcn UI를 설치하고 구성합니다.
 ### Details:
@@ -40,7 +40,7 @@
 2. Shadcn UI (v0.1.0)를 설치하고 구성합니다.
 3. 기본 테마와 색상을 설정합니다.
 
-## 4. 코드 품질 도구 설정 [pending]
+## 4. 코드 품질 도구 설정 [done]
 ### Dependencies: 1.2
 ### Description: ESLint와 Prettier를 설정하여 코드 품질을 유지합니다.
 ### Details:
@@ -49,11 +49,56 @@
 3. ESLint와 Prettier 통합을 설정합니다.
 4. VS Code 설정 파일을 추가하여 편집기 통합을 개선합니다.
 
-## 5. 프로젝트 구조 및 문서화 [pending]
+## 5. 프로젝트 구조 및 문서화 [done]
 ### Dependencies: 1.2, 1.3, 1.4
 ### Description: 기본 프로젝트 구조를 설정하고 README.md 파일을 작성합니다.
 ### Details:
 1. 프로젝트에 필요한 폴더 구조를 생성합니다 (components, pages, hooks, utils 등).
 2. README.md 파일을 작성하여 프로젝트 설정 및 실행 방법을 문서화합니다.
 3. 기본 컴포넌트와 페이지 예제를 추가합니다.
+<info added on 2025-06-23T15:12:01.076Z>
+1. **프로젝트 폴더 구조 생성**
+   - src/pages/ - 페이지 컴포넌트
+   - src/hooks/ - 커스텀 React 훅  
+   - src/types/ - TypeScript 타입 정의
+   - src/services/ - API 서비스
+   - src/constants/ - 애플리케이션 상수
+   - src/assets/ - 정적 자산
+
+2. **기본 컴포넌트 및 파일 생성**
+   - HomePage.tsx - 메인 홈페이지 컴포넌트 (ZipCheck 소개, 3개 주요 기능 섹션)
+   - types/index.ts - Property, User, RiskAnalysis 등 핵심 타입 정의
+   - constants/index.ts - APP_CONFIG, API_ENDPOINTS, RISK_LEVELS 등 상수
+   - hooks/useLocalStorage.ts - localStorage 커스텀 훅
+   - services/api.ts - 재사용 가능한 API 서비스 클래스
+
+3. **App.tsx 업데이트**
+   - 기존 테스트 UI를 제거하고 HomePage 컴포넌트로 교체
+   - 깔끔한 진입점 구성
+
+4. **포괄적인 README.md 작성**
+   - 프로젝트 소개 및 주요 기능 설명
+   - 기술 스택 및 프로젝트 구조 문서화
+   - 설치/실행 방법 상세 가이드
+   - 개발 환경 설정 가이드 (ESLint, Prettier)
+   - 사용 가능한 npm 스크립트 설명
+   - 환경 변수 및 배포 방법 문서화
+
+5. **테스트 완료**
+   - 프로덕션 빌드 성공 (dist/ 폴더 생성, 172.98 kB)
+   - ESLint 검사 통과 (경고 0개)
+   - 개발 서버 정상 실행 확인
+
+6. **구조적 개선 사항:**
+   - 명확한 폴더 분리로 코드 구조 개선
+   - TypeScript 타입 안정성 확보
+   - 재사용 가능한 API 서비스 패턴 구축
+   - 일관된 상수 관리 체계
+   - 전문적인 프로젝트 문서화
+
+7. **다음 단계 준비:**
+   - 라우팅 시스템 구현 준비 완료
+   - 컴포넌트 기반 구조 확립
+   - API 통신 기반 구조 마련
+</info added on 2025-06-23T15:12:01.076Z>
 

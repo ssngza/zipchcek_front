@@ -1,6 +1,6 @@
 # Task ID: 4
 # Title: 분석 중 로딩 화면 UI 개발
-# Status: pending
+# Status: done
 # Dependencies: 3
 # Priority: medium
 # Description: PDF 업로드 후 분석이 진행되는 동안 표시되는 로딩 화면 UI를 구현합니다.

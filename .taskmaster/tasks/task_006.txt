@@ -1,6 +1,6 @@
 # Task ID: 6
 # Title: 분석 기록 목록 및 상세 화면 UI 개발
-# Status: pending
+# Status: done
 # Dependencies: 5
 # Priority: medium
 # Description: 사용자의 분석 기록을 목록으로 보여주고, 선택 시 해당 분석 결과를 다시 볼 수 있는 화면을 구현합니다.
@@ -27,55 +27,55 @@
 9. 다양한 화면 크기에서의 반응형 디자인을 테스트합니다.
 
 # Subtasks:
-## 1. 분석 기록 목록 화면 레이아웃 구현 [pending]
+## 1. 분석 기록 목록 화면 레이아웃 구현 [done]
 ### Dependencies: None
 ### Description: 분석 기록을 표시할 메인 목록 화면의 기본 레이아웃을 구현합니다.
 ### Details:
 
 
-## 2. 분석 기록 카드 컴포넌트 개발 [pending]
+## 2. 분석 기록 카드 컴포넌트 개발 [done]
 ### Dependencies: None
 ### Description: 날짜, 파일명, 분석 결과 요약을 표시하는 재사용 가능한 카드 컴포넌트를 생성합니다.
 ### Details:
 
 
-## 3. 필터링 및 정렬 UI 구현 [pending]
+## 3. 필터링 및 정렬 UI 구현 [done]
 ### Dependencies: None
 ### Description: 날짜순, 위험도순 등의 정렬 옵션과 필터링 기능을 위한 UI 컴포넌트를 구현합니다.
 ### Details:
 
 
-## 4. 검색 기능 UI 개발 [pending]
+## 4. 검색 기능 UI 개발 [done]
 ### Dependencies: None
 ### Description: 분석 기록을 검색할 수 있는 검색바와 관련 UI를 구현합니다.
 ### Details:
 
 
-## 5. 삭제 아이콘 UI 구현 [pending]
+## 5. 삭제 아이콘 UI 구현 [done]
 ### Dependencies: None
 ### Description: 휴지통 아이콘(삭제) 기능을 위한 UI를 구현합니다.
 ### Details:
 
 
-## 6. 빈 상태 UI 디자인 및 구현 [pending]
+## 6. 빈 상태 UI 디자인 및 구현 [done]
 ### Dependencies: None
 ### Description: 분석 기록이 없을 때 표시할 빈 상태 화면을 디자인하고 구현합니다.
 ### Details:
 
 
-## 7. 분석 결과 화면 네비게이션 구현 [pending]
+## 7. 분석 결과 화면 네비게이션 구현 [done]
 ### Dependencies: None
 ### Description: 분석 기록 클릭 시 해당 분석 결과 화면으로 이동하는 네비게이션 로직을 구현합니다.
 ### Details:
 
 
-## 8. 페이지네이션 또는 무한 스크롤 UI 구현 [pending]
+## 8. 페이지네이션 또는 무한 스크롤 UI 구현 [done]
 ### Dependencies: None
 ### Description: 많은 분석 기록을 효율적으로 표시하기 위한 페이지네이션 또는 무한 스크롤 기능을 구현합니다.
 ### Details:
 
 
-## 9. 반응형 디자인 적용 [pending]
+## 9. 반응형 디자인 적용 [done]
 ### Dependencies: None
 ### Description: 모바일, 태블릿, 데스크톱 환경에서 최적화된 화면을 제공하기 위한 반응형 디자인을 적용합니다.
 ### Details:
