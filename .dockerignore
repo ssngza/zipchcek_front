@@ -1,0 +1,8 @@
+# Git • Cursor • VSCode • Taskmaster 설정
+.git
+.cursor/
+.taskmaster/
+
+# Docker/meta
+Dockerfile*
+docker-compose*.yml
