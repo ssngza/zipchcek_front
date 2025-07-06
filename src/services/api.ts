@@ -187,7 +187,7 @@ export default {
   // 등기부등본 분석 API
   analyzeRegistration: async (
     file: File,
-    model: string = "gpt-4o",
+    model: string = "gpt-4.1",
     onProgress?: (progress: number) => void
   ) => {
     const formData = new FormData();

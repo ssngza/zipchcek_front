@@ -161,7 +161,7 @@ export default function LoadingPage({
       // API 호출
       const result = await api.analyzeRegistration(
         file,
-        "gpt-4o",
+        "gpt-4.1",
         uploadProgress => {
           // 업로드 진행률 업데이트
           setProgress(uploadProgress);
